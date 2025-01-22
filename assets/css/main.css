@@ -53,3 +53,13 @@ body {
     font-size: 1.2rem;
 }
 
+/* Add to main.css */
+.select2-container--disabled .select2-selection {
+    background-color: #2a2a2a;
+    cursor: not-allowed;
+}
+
+.select2-container--disabled .select2-selection__arrow {
+    display: none;
+}
+
