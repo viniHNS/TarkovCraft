@@ -9,9 +9,11 @@ const select2Selectors = [
 // Function to generate MongoDB-style ObjectId
 function generateObjectId() {
     const timestamp = Math.floor(new Date().getTime() / 1000).toString(16);
-    return timestamp + 'xxxxxxxxxxxxxxxx'.replace(/x/g, () => 
-        Math.floor(Math.random() * 16).toString(16)
-    ).padEnd(24, '0');
+    const objectId = timestamp + 'xxxxxxxxxxxxxxxx'.replace(/[x]/g, () => {
+        return Math.floor(Math.random() * 16).toString(16);
+    }).toLowerCase();
+
+    return objectId;
 }
 
 // Initialize all Select2 dropdowns
