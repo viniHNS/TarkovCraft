@@ -8,11 +8,9 @@
     <meta name="description" content="Create your own Tarkov crafts">
     <meta property="og:description" content="Create your own Tarkov crafts">
     <meta property="og:title" content="Tarkov Craft">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="./assets/css/main.css">
-    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"
-        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link rel="icon" href="./assets/img/favicon-svg.svg" type="image/svg+xml">
 </head>
@@ -20,16 +18,21 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
-            <!-- Navbar Brand (Left Side) -->
+            <!-- Left-aligned Brand -->
             <a class="navbar-brand" href="#">TARKOV CRAFT</a>
+
             <!-- Mobile Toggle Button -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <!-- Collapsible Content (Empty after button removal) -->
+
+            <!-- Right-aligned Content -->
             <div class="collapse navbar-collapse" id="navbarNav">
-                <!-- Removed refresh button section -->
+                <div class="ms-auto">
+                    <button class="btn btn-outline-secondary" onclick="localStorage.clear(); location.reload()">
+                        Clear LocalStorage
+                    </button>
+                </div>
             </div>
         </div>
     </nav>
@@ -45,10 +48,8 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="input-group mb-3">
-                                    <input type="text" class="form-control" placeholder="WIP" aria-label="Craft Name"
-                                        aria-describedby="button-addon2">
-                                    <button class="btn btn-outline-secondary" type="button"
-                                        id="button-addon2">Add</button>
+                                    <input type="text" class="form-control" placeholder="WIP" aria-label="Craft Name" aria-describedby="button-addon2">
+                                    <button class="btn btn-outline-secondary" type="button" id="button-addon2">Add</button>
                                 </div>
                             </div>
                         </div>
@@ -68,8 +69,7 @@
                                     Ingredients</p>
                             </div>
                             <div class="col-md-3">
-                                <p data-bs-toggle="tooltip" data-bs-placement="left"
-                                    title="Choose the Amount of Ingredients">Amount</p>
+                                <p data-bs-toggle="tooltip" data-bs-placement="left" title="Choose the Amount of Ingredients">Amount</p>
                             </div>
                         </div>
 
@@ -83,8 +83,7 @@
                                     </select>
                                 </div>
                                 <div class="col-md-3">
-                                    <input class="form-control" id="ingredientAmountInput1" placeholder="How many?"
-                                        type="number">
+                                    <input class="form-control" id="ingredientAmountInput1" placeholder="How many?" type="number">
                                 </div>
                             </div>
 
@@ -96,8 +95,7 @@
                                     </select>
                                 </div>
                                 <div class="col-md-3">
-                                    <input class="form-control" id="ingredientAmountInput2" placeholder="How many?"
-                                        type="number">
+                                    <input class="form-control" id="ingredientAmountInput2" placeholder="How many?" type="number">
                                 </div>
                             </div>
 
@@ -109,8 +107,7 @@
                                     </select>
                                 </div>
                                 <div class="col-md-3">
-                                    <input class="form-control" id="ingredientAmountInput3" placeholder="How many?"
-                                        type="number">
+                                    <input class="form-control" id="ingredientAmountInput3" placeholder="How many?" type="number">
                                 </div>
                             </div>
 
@@ -122,8 +119,7 @@
                                     </select>
                                 </div>
                                 <div class="col-md-3">
-                                    <input class="form-control" id="ingredientAmountInput4" placeholder="How many?"
-                                        type="number">
+                                    <input class="form-control" id="ingredientAmountInput4" placeholder="How many?" type="number">
                                 </div>
                             </div>
                         </div>
@@ -132,8 +128,7 @@
 
                         <div class="row">
                             <div class="col-md-6">
-                                <p data-bs-toggle="tooltip" data-bs-placement="left"
-                                    title="Choose the Tools (If empty, it will be a craft without tools)">Tools</p>
+                                <p data-bs-toggle="tooltip" data-bs-placement="left" title="Choose the Tools (If empty, it will be a craft without tools)">Tools</p>
                             </div>
                             <div class="col-md-6">
                                 <p data-bs-toggle="tooltip" data-bs-placement="left" title="Some important values">Misc.
@@ -163,9 +158,7 @@
                                     </select>
                                 </div>
                                 <div class="col-md-3">
-                                    <input class="form-control" id="craftTimeInput" placeholder="Time to craft"
-                                        data-bs-toggle="tooltip" data-bs-placement="left" title="In minutes"
-                                        type="number">
+                                    <input class="form-control" id="craftTimeInput" placeholder="Time to craft" data-bs-toggle="tooltip" data-bs-placement="left" title="In minutes" type="number">
                                 </div>
                                 <div class="col-md-3">
                                     <select class="form-select tool-select" id="HideoutAreaInput">
@@ -181,12 +174,10 @@
                                     </select>
                                 </div>
                                 <div class="col-md-3">
-                                    <input class="form-control" id="endProductCountInput"
-                                        placeholder="Amount of end product" type="number">
+                                    <input class="form-control" id="endProductCountInput" placeholder="Amount of end product" type="number">
                                 </div>
                                 <div class="col-md-3">
-                                    <input class="form-control" id="hideoutLevelInput" placeholder="Hideout Area LVL"
-                                        type="number">
+                                    <input class="form-control" id="hideoutLevelInput" placeholder="Hideout Area LVL" type="number">
                                 </div>
                             </div>
                         </div>
@@ -202,8 +193,7 @@
                                 <div class="modal-content bg-dark text-white">
                                     <div class="modal-header">
                                         <h5 class="modal-title">Generated Recipe JSON</h5>
-                                        <button type="button" class="btn-close btn-close-white"
-                                            data-bs-dismiss="modal"></button>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                                     </div>
                                     <div class="modal-body">
                                         <pre id="jsonOutput" class="text-white"></pre>
@@ -226,8 +216,7 @@
         <!-- Grid container -->
         <div class="container-fluid p-1" style="background-color: #14141433;">
             <div class="row align-items-center">
-                <p class="text text-center m-0" data-bs-toggle="tooltip" data-bs-placement="top"
-                    title="All the information is provided by Tarkov.DEV API">The database is stored using
+                <p class="text text-center m-0" data-bs-toggle="tooltip" data-bs-placement="top" title="All the information is provided by Tarkov.DEV API">The database is stored using
                     localStorage.</a>
             </div>
 
@@ -238,32 +227,24 @@
                     <p class="text text-center m-0">© 2025 - Tarkov Craft - Made by ViniHNS</a>
                 </div>
                 <div class="col-md-4">
-                    <p class="text text-center m-0"> Made with <a class="text-center m-0 text-decoration-none"
-                            href="http://www.aka.ms/confidential" target="_blank"><i class="fa-solid fa-heart"
-                                aria-hidden="true" style="color: red;"></i></a></p>
+                    <p class="text text-center m-0"> Made with <a class="text-center m-0 text-decoration-none" href="http://www.aka.ms/confidential" target="_blank"><i class="fa-solid fa-heart" aria-hidden="true" style="color: red;"></i></a></p>
                 </div>
-
                 <div class="col-md-4">
                     <!-- Github -->
-                    <a class="btn btn-outline-light btn-floating m-1" href="https://github.com/viniHNS" target="_blank"
-                        role="button" data-bs-toggle="tooltip" data-bs-placement="top" title="GitHub">
+                    <a class="btn btn-outline-light btn-floating m-1" href="https://github.com/viniHNS" target="_blank" role="button" data-bs-toggle="tooltip" data-bs-placement="top" title="GitHub">
                         <i class="fab fa-github"></i>
                     </a>
                     <!-- Discord -->
-                    <a class="btn btn-outline-light btn-floating m-1" href="javascript:void(0);" role="button"
-                        data-bs-toggle="tooltip" data-bs-placement="top" title="Click to copy my Discord username"
-                        onclick="copyDiscordUsername()">
+                    <a class="btn btn-outline-light btn-floating m-1" href="javascript:void(0);" role="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Click to copy my Discord username" onclick="copyDiscordUsername()">
                         <i class="fab fa-discord"></i>
                     </a>
                     <!-- Buy me a Coffee -->
-                    <a class="btn btn-outline-light btn-floating m-1" href="https://ko-fi.com/vinihns" target="_blank"
-                        role="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Support me!">
+                    <a class="btn btn-outline-light btn-floating m-1" href="https://ko-fi.com/vinihns" target="_blank" role="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Support me!">
                         <i class="fas fa-coffee"></i>
                     </a>
                 </div>
             </div>
         </div>
-        <!-- Copyright -->
     </footer>
 
     <div class="toast-container position-fixed bottom-0 end-0 p-3">
@@ -275,14 +256,10 @@
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
-        integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="https://kit.fontawesome.com/62c44247f4.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script>
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
