@@ -1,6 +1,16 @@
+function copyDiscordUsername() {
+    navigator.clipboard.writeText("bagreassalariado");
+    // Show feedback
+    const tooltip = bootstrap.Tooltip.getInstance(event.target);
+    if (tooltip) {
+        tooltip.setContent({ '.tooltip-inner': 'Copied to clipboard!' });
+        setTimeout(() => tooltip.hide(), 1000);
+    }
+}
+
 // Define all Select2 selectors
 const select2Selectors = [
-    '#ingredientInput1', '#ingredientInput2', 
+    '#ingredientInput1', '#ingredientInput2',
     '#ingredientInput3', '#ingredientInput4',
     '#toolInput1', '#toolInput2', '#toolInput3',
     '#finalProductInput', '#HideoutAreaInput'
@@ -41,6 +51,40 @@ function initializeAllSelect2(items) {
         placeholder: 'Select final product...'
     });
 
+/*
+    |-----------------------------------------------------|
+    |     **Name**          | **AreaID** | **Max level**  |
+    | --------------------- | ---------- | -------------  |
+    | VENTS                 | 0          | 3              |
+    | SECURITY              | 1          | 3              |
+    | LAVATORY              | 2          | 3              |
+    | STASH                 | 3          | 4              |
+    | GENERATOR             | 4          | 3              |
+    | HEATING               | 5          | 3              |
+    | WATER COLLECTOR       | 6          | 3              |
+    | MEDSTATION            | 7          | 3              |
+    | NUTRITION UNIT        | 8          | 3              |
+    | REST SPACE            | 9          | 3              |
+    | WORKBENCH             | 10         | 3              |
+    | INTELLIGENCE CENTER   | 11         | 3              |
+    | SHOOTING RANGE        | 12         | 3              |
+    | LIBRARY               | 13         | 1              |
+    | SCAV CASE             | 14         | 1              |
+    | ILLUMINATION          | 15         | 3              |
+    | PLACE OF FAME         | 16         | 3              |
+    | AIR FILTRERING UNIT   | 17         | 1              |
+    | SOLAR POWER           | 18         | 1              |
+    | BOOZE GENERATOR       | 19         | 1              |
+    | BITCOIN FARM          | 20         | 3              |
+    | CHRISTMAS TREE        | 21         | 1              |
+    | BROKEN WALL           | 22         | 6              |
+    | GYM                   | 23         | 1              |
+    | Weapon Rack           | 24         | 3              |
+    | Weapon Rack SECONDARY | 25         | 3              |
+    | Gear Rack             | 26         | 3              |
+    | Cultist Circle        | 27         | 1              |
+    |-----------------------------------------------------|
+*/
     // Hideout area select
     $('#HideoutAreaInput').select2({
         theme: 'bootstrap-5',
@@ -85,11 +129,11 @@ function generateRecipeJson() {
     });
 
     // Add ingredients
-    for(let i = 1; i <= 4; i++) {
+    for (let i = 1; i <= 4; i++) {
         const itemId = $(`#ingredientInput${i}`).val();
         const count = $(`#ingredientAmountInput${i}`).val();
-        
-        if(itemId && count) {
+
+        if (itemId && count) {
             recipe.requirements.push({
                 "templateId": itemId,
                 "count": parseInt(count),
@@ -101,9 +145,9 @@ function generateRecipeJson() {
     }
 
     // Add tools
-    for(let i = 1; i <= 3; i++) {
+    for (let i = 1; i <= 3; i++) {
         const toolId = $(`#toolInput${i}`).val();
-        if(toolId) {
+        if (toolId) {
             recipe.requirements.push({
                 "templateId": toolId,
                 "type": "Tool"
@@ -112,12 +156,12 @@ function generateRecipeJson() {
     }
 
     // Validation with toasts
-    if(!recipe.endProduct) {
+    if (!recipe.endProduct) {
         showToast('Please select a final product!');
         return null;
     }
 
-    if(recipe.productionTime <= 0) {
+    if (recipe.productionTime <= 0) {
         showToast('Please enter valid production time!');
         return null;
     }
@@ -128,7 +172,7 @@ function generateRecipeJson() {
 // Modal and clipboard functionality
 $('#generateJson').click(() => {
     const recipe = generateRecipeJson();
-    if(recipe) {
+    if (recipe) {
         $('#jsonOutput').text(JSON.stringify(recipe, null, 2));
         new bootstrap.Modal('#jsonModal').show();
     }
@@ -136,7 +180,7 @@ $('#generateJson').click(() => {
 
 $('#copyJson').click(() => {
     const recipe = generateRecipeJson();
-    if(recipe) {
+    if (recipe) {
         navigator.clipboard.writeText(JSON.stringify(recipe, null, 2));
         showToast('JSON copied to clipboard!', 'success');
     }
@@ -146,10 +190,10 @@ $('#copyJson').click(() => {
 function showToast(message, type = 'danger') {
     const toastEl = document.getElementById('errorToast');
     const toastMessage = document.getElementById('toastMessage');
-    
+
     toastEl.className = `toast bg-${type} text-white`;
     toastMessage.textContent = message;
-    
+
     const toast = new bootstrap.Toast(toastEl);
     toast.show();
 }
