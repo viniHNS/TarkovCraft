@@ -20,18 +20,21 @@
         <div class="container-fluid">
             <!-- Left-aligned Brand -->
             <a class="navbar-brand" href="#">TARKOV CRAFT</a>
-
+    
             <!-- Mobile Toggle Button -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-
+    
             <!-- Right-aligned Content -->
             <div class="collapse navbar-collapse" id="navbarNav">
-                <div class="ms-auto">
-                    <button class="btn btn-outline-secondary" onclick="localStorage.clear(); location.reload()">
+                <div class="ms-auto d-flex align-items-center">
+                    <button class="btn btn-outline-secondary me-2" onclick="localStorage.clear(); location.reload();">
                         Clear LocalStorage
                     </button>
+                    <a class="btn btn-outline-secondary" href="https://hub.sp-tarkov.com/advertising-disclaimer/" target="_blank">
+                        SPT Disclaimer
+                    </a>
                 </div>
             </div>
         </div>
