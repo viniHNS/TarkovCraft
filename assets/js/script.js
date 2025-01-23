@@ -273,7 +273,7 @@ async function loadData() {
 
         // If no cached data, fetch from API
         if (!items.length) {
-            showToast('Fetching latest data...', 'info');
+            showToast('Fetching latest data... This may take a while', 'info');
             items = await fetchData();
             
             if (items.length) {
