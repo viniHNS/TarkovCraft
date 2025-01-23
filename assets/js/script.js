@@ -202,6 +202,9 @@ function generateRecipeJson() {
         return null;
     }
 
+    // Add this return statement
+    return recipe;
+
 }
 
 // Modal and clipboard functionality
