@@ -206,6 +206,10 @@ function generateRecipeJson() {
 
 }
 
+$('.wip').click(() => {
+    showToast('This feature is a work in progress!', 'warning');
+})
+
 // Modal and clipboard functionality
 $('#generateJson').click(() => {
     const recipe = generateRecipeJson();
