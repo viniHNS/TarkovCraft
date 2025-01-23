@@ -202,7 +202,6 @@ function generateRecipeJson() {
         return null;
     }
 
-    // Add this return statement
     return recipe;
 
 }
@@ -259,7 +258,6 @@ async function fetchData() {
     }
 }
 
-// Enhanced loadData with error handling and fallback
 async function loadData() {
     try {
         let items = [];
@@ -282,7 +280,7 @@ async function loadData() {
             }
         }
 
-        // Initialize Select2 if we have items
+        // Initialize Select2
         if (items.length) {
             initializeAllSelect2(items);
         } else {
