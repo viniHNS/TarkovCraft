@@ -217,21 +217,29 @@ $('.wip').click(() => {
     showToast('This feature is not yet implemented', 'warning');
 })
 
+$('#button-addon2').off('click').click(addCraft);
+
 // Modal and clipboard functionality
 $('#generateJson').click(() => {
-    const recipe = generateRecipeJson();
-    if (recipe) {
-        $('#jsonOutput').text(JSON.stringify(recipe, null, 2));
-        new bootstrap.Modal('#jsonModal').show();
-    }
+    if (crafts.length === 0) {
+        showToast('No crafts to generate!', 'warning');
+        return;
+    } 
+    const cleanCrafts = crafts.map(({ displayName, ...rest }) => rest);
+    const jsonString = JSON.stringify(cleanCrafts, null, 2);
+    $('#jsonOutput').text(jsonString);
+    new bootstrap.Modal('#jsonModal').show();
 });
 
 $('#copyJson').click(() => {
-    const recipe = generateRecipeJson();
-    if (recipe) {
-        navigator.clipboard.writeText(JSON.stringify(recipe, null, 2));
-        showToast('JSON copied to clipboard!', 'success');
+    if (crafts.length === 0) {
+        showToast('No crafts to copy!', 'warning');
+        return;
     }
+    
+    const cleanCrafts = crafts.map(({ displayName, ...rest }) => rest);
+    navigator.clipboard.writeText(JSON.stringify(cleanCrafts));
+    showToast('All crafts copied to clipboard!', 'success');
 });
 
 // Toast functionality
@@ -304,6 +312,48 @@ async function loadData() {
         showToast('Failed to load data. Using fallback.', 'danger');
         initializeWithFallbackData();
     }
+}
+
+let crafts = [];
+
+function resetForm() {
+    $('#craftNameInput').val(''); 
+    select2Selectors.forEach(selector => {
+        $(selector).val(null).trigger('change');
+    });
+    
+    ['#ingredientAmountInput1', '#ingredientAmountInput2', '#ingredientAmountInput3', '#ingredientAmountInput4',
+     '#craftTimeInput', '#endProductCountInput', '#hideoutLevelInput'].forEach(selector => {
+        $(selector).val('');
+    });
+}
+
+function addCraft() {
+    const craftName = $('#craftNameInput').val().trim();
+    const recipe = generateRecipeJson();
+    
+    if (!recipe) return;
+
+    // Adiciona nome apenas ao recipe para exibição (não será incluído no JSON)
+    recipe.displayName = craftName || `Craft ${crafts.length + 1}`;
+    
+    crafts.push(recipe); // Armazena apenas o recipe
+    updateCraftsList();
+    resetForm();
+}
+
+function updateCraftsList() {
+    const list = $('#craftsList .list-group');
+    list.empty();
+    
+    crafts.forEach((craft, index) => {
+        list.append(`
+            <div class="list-group-item d-flex justify-content-between align-items-center rounded-2 my-3">
+                ${craft.displayName || `Craft ${index + 1}`}
+                <small>${craft.endProduct}</small>
+            </div>
+        `);
+    });
 }
 
 // Fallback data initialization
