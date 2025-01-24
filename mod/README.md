@@ -43,7 +43,7 @@ To add a recipe, go to the folder `crafts` and put your recipe in the `crafts.js
     | Cultist Circle        | 27         | 1              |
     |-----------------------------------------------------|
 
-    // The following is an example of a common craft recipe, you can use [THIS](https://vinihns.github.io/TarkovCraft/) tool to create the JSONs.
+// The following is an example of a common craft recipe, you can use [THIS](https://vinihns.github.io/TarkovCraft/) tool to create the JSONs.
 
 // JSON structure:
 
