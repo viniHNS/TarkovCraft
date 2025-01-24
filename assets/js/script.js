@@ -26,6 +26,14 @@ function generateObjectId() {
     return objectId;
 }
 
+function handleMongoId(){
+    const mongoId = generateObjectId();
+    navigator.clipboard.writeText(mongoId);
+
+    // Show feedback
+    showToast(`MongoDB ObjectId copied to clipboard!`, 'success');
+}
+
 // Initialize all Select2 dropdowns
 function initializeAllSelect2(items) {
     // Common configuration for item selects
@@ -207,7 +215,7 @@ function generateRecipeJson() {
 }
 
 $('.wip').click(() => {
-    showToast('This feature is a work in progress!', 'warning');
+    showToast('This feature is not yet implemented', 'warning');
 })
 
 // Modal and clipboard functionality
