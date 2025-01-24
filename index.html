@@ -29,9 +29,14 @@
             <!-- Right-aligned Content -->
             <div class="collapse navbar-collapse" id="navbarNav">
                 <div class="ms-auto d-flex align-items-center">
+                    <button class="btn btn-outline-secondary me-2" onclick="handleMongoId()">
+                        ID Generator
+                    </button>
+
                     <button class="btn btn-outline-secondary me-2" onclick="localStorage.clear(); location.reload();">
                         Clear LocalStorage
                     </button>
+
                     <a class="btn btn-outline-secondary" href="https://hub.sp-tarkov.com/advertising-disclaimer/" target="_blank">
                         SPT Disclaimer
                     </a>
@@ -76,7 +81,6 @@
                             </div>
                         </div>
 
-                        <!-- Static Input Rows -->
                         <div id="ingredientRows">
                             <!-- Row 1 -->
                             <div class="row mb-3">
@@ -139,7 +143,6 @@
                             </div>
                         </div>
 
-                        <!-- Static Input Rows -->
                         <div id="toolRows">
                             <div class="row mb-3">
                                 <div class="col-md-6">
@@ -190,7 +193,7 @@
                             </button>
                         </div>
 
-                        <!-- Add this modal for displaying the generated JSON -->
+                        <!-- Modal for displaying the generated JSON -->
                         <div class="modal fade" id="jsonModal" tabindex="-1">
                             <div class="modal-dialog modal-lg">
                                 <div class="modal-content bg-dark text-white">
