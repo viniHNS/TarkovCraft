@@ -105,7 +105,6 @@ function initializeAllSelect2(items) {
             { id: '10', text: 'WORKBENCH' },
             { id: '11', text: 'INTELLIGENCE CENTER' },
             { id: '19', text: 'BOOZE GENERATOR' },
-            { id: '20', text: 'BITCOIN FARM' }
         ],
         width: '100%'
     });
