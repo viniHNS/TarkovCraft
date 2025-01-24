@@ -63,3 +63,22 @@ body {
     display: none;
 }
 
+#craftsList .list-group-item {
+    background-color: #343a40;
+    color: white;
+    border: 1px solid #495057;
+    margin-bottom: 2px;
+    padding: 0.5rem;
+}
+
+#craftsList .list-group-item:hover {
+    background-color: #3d4348;
+}
+
+#craftsList .btn-danger {
+    padding: 0.15rem 0.3rem;
+    font-size: 0.8rem;
+}
+
+
+
