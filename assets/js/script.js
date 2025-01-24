@@ -348,7 +348,7 @@ function updateCraftsList() {
     
     crafts.forEach((craft, index) => {
         list.append(`
-            <div class="list-group-item d-flex justify-content-between align-items-center rounded-2 my-3">
+            <div class="list-group-item d-flex justify-content-between align-items-center rounded-2 my-1">
                 ${craft.displayName || `Craft ${index + 1}`}
                 <small>${craft.endProduct}</small>
             </div>
