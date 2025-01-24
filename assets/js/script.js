@@ -104,8 +104,8 @@ function initializeAllSelect2(items) {
             { id: '8', text: 'NUTRITION UNIT' },
             { id: '10', text: 'WORKBENCH' },
             { id: '11', text: 'INTELLIGENCE CENTER' },
-            { id: '14', text: 'SCAV CASE' },
-            { id: '27', text: 'Cultist Circle' }
+            { id: '19', text: 'BOOZE GENERATOR' },
+            { id: '20', text: 'BITCOIN FARM' }
         ],
         width: '100%'
     });
