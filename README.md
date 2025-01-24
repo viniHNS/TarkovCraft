@@ -44,6 +44,9 @@ A web tool for creating custom Escape from Tarkov hideout craft recipes.
   {"craft2": "details"}
 ]
 ```
+6. Copy the JSON to your clipboard
+7. If you have my [server mod](https://github.com/viniHNS/TarkovCraft/tree/main/mod), paste the JSON into `crafts.json` in the `crafts` folder.
+
 ## 🛠️ Development
 
 ### Contributing
