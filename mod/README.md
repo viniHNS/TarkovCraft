@@ -1,66 +1,93 @@
-# Welcome to the SPT Modding Project
+# Tarkov Craft
 
-This project is designed to streamline the initial setup process for building and creating mods in the SPT environment. Follow this guide to set up your environment efficiently.
+## What is this?
 
-## **Table of Contents**
-- [NodeJS Setup](#nodejs-setup)
-- [IDE Setup](#ide-setup)
-- [Workspace Configuration](#workspace-configuration)
-- [Environment Setup](#environment-setup)
-- [Essential Concepts](#essential-concepts)
-- [Coding Guidelines](#coding-guidelines)
-- [Distribution Guidelines](#distribution-guidelines)
+This is a mod for [SPT](https://www.sp-tarkov.com "The main goal of the project is to provide a single-player offline experience with ready-to-use progression for the official BSG client. Now you can play Escape From Tarkov while waiting for their servers to come back online, when you're offline, or if you need a break from cheaters.") that you can use to add custom recipes to the game.
 
-## **NodeJS Setup**
+## Usage
+### Adding a recipe
+To add a recipe, go to the folder `crafts` and put your recipe in the `crafts.json`, inside the `[]` (You can use [THIS](https://vinihns.github.io/TarkovCraft/) tool to create the JSONs). The recipe must be a JSON file with the following structure:
 
-Before you begin, ensure to install NodeJS version `v20.11.1`, which has been tested thoroughly with our mod templates and build scripts. Download it from the [official NodeJS website](https://nodejs.org/).
+```json
+// Area types:
+    |-----------------------------------------------------|
+    |     **Name**          | **AreaID** | **Max level**  |
+    | --------------------- | ---------- | -------------  |
+    | VENTS                 | 0          | 3              |
+    | SECURITY              | 1          | 3              |
+    | LAVATORY              | 2          | 3              |
+    | STASH                 | 3          | 4              |
+    | GENERATOR             | 4          | 3              |
+    | HEATING               | 5          | 3              |
+    | WATER COLLECTOR       | 6          | 3              |
+    | MEDSTATION            | 7          | 3              |
+    | NUTRITION UNIT        | 8          | 3              |
+    | REST SPACE            | 9          | 3              |
+    | WORKBENCH             | 10         | 3              |
+    | INTELLIGENCE CENTER   | 11         | 3              |
+    | SHOOTING RANGE        | 12         | 3              |
+    | LIBRARY               | 13         | 1              |
+    | SCAV CASE             | 14         | 1              |
+    | ILLUMINATION          | 15         | 3              |
+    | PLACE OF FAME         | 16         | 3              |
+    | AIR FILTRERING UNIT   | 17         | 1              |
+    | SOLAR POWER           | 18         | 1              |
+    | BOOZE GENERATOR       | 19         | 1              |
+    | BITCOIN FARM          | 20         | 3              |
+    | CHRISTMAS TREE        | 21         | 1              |
+    | BROKEN WALL           | 22         | 6              |
+    | GYM                   | 23         | 1              |
+    | Weapon Rack           | 24         | 3              |
+    | Weapon Rack SECONDARY | 25         | 3              |
+    | Gear Rack             | 26         | 3              |
+    | Cultist Circle        | 27         | 1              |
+    |-----------------------------------------------------|
 
-After installation, it's advised to reboot your system.
+    // The following is an example of a common craft recipe, you can use [THIS](https://vinihns.github.io/TarkovCraft/) tool to create the JSONs.
 
-## **IDE Setup**
+// JSON structure:
 
-For this project, you can work with either [VSCodium](https://vscodium.com/) or [VSCode](https://code.visualstudio.com/). However, we strongly recommend using VSCode, as all development and testing have been carried out using this IDE, ensuring a smoother experience and compatibility with the project setups. Either way, we have a prepared a workspace file to assist you in setting up your environment.
+{
+  "_id": "unique_id_mongoID",
+  "areaType": "area_type_number",
+  "requirements": [
+    {
+      "areaType": "area_type_number",
+      "requiredLevel": "required_level_number",
+      "type": "Area" // Don't touch this
+    },
 
-## **Workspace Configuration**
+    // Here you can put the items needed for the recipe
+    {
+      "templateId": "item_id",
+      "count": 1, // Amount of items needed
+      "isFunctional": false, // Don't touch this
+      "isEncoded": false, // Don't touch this
+      "type": "Item" // Don't touch this
+    },
 
-With NodeJS and your chosen IDE ready, initiate the `mod.code-workspace` file using your IDE:
+    // This is optional, but if you want to add a tool to the recipe, you can do it like this:
+    { 
+      "templateId": "item_id",
+      "type": "Tool"
+    }
+  ],
+  "productionTime": 3600, // In seconds
+  "needFuelForAllProductionTime": false, // Self explanatory
+  "locked": false, // Don't touch this
+  "endProduct": "unique_id_mongoID", // Item ID of the final product
+  "continuous": false,
+  "count": 1, // Amount of final product
+  "productionLimitCount": 0, 
+  "isEncoded": false,
+  "isCodeProduction": false
+}, <- //If you want to add more than one recipe, remember to put a comma between them
+```
 
-> File -> Open Workspace from File...
+## Installation
 
-Upon project loading, consider installing recommended plugins like the ESLint plugin.
+Simply place the `user` folder into your `SPT` game installation directory.
 
-## **Environment Setup**
+## License
 
-An automated task is available to configure your environment for Typescript utilization:
-
-> Terminal -> Run Task... -> Show All Tasks... -> npm: install
-
-Note: Preserve the `node_modules` folder as it contains necessary dependencies for Typescript and other functionalities.
-
-## **Essential Concepts**
-
-Prioritize understanding Dependency Injection and Inversion of Control, the architectural principles SPT adopts. Comprehensive guidelines will be available on the hub upon release.
-
-Some resources to get you started:
- - [A quick intro to Dependency Injection](https://www.freecodecamp.org/news/a-quick-intro-to-dependency-injection-what-it-is-and-when-to-use-it-7578c84fa88f/)
- - [Understanding Inversion of Control (IoC) Principle](https://medium.com/@amitkma/understanding-inversion-of-control-ioc-principle-163b1dc97454)
-
-## **Coding Guidelines**
-
-Focus your mod development around the `mod.ts` file. In the `package.json` file, only alter these properties: `"name"`, `"version"`, `"sptVersion"`, `"loadBefore"`, `"loadAfter"`, `"incompatibilities"`, `"isBundleMod"`, `"author"`, and `"license"`.
-
-New to Typescript? Find comprehensive documentation on the [official website](https://www.typescriptlang.org/docs/).
-
-## **Distribution Guidelines**
-
-Automated tasks are set up to bundle all necessary files for your mod to function in SPT:
-
-> Terminal -> Run Task... -> Show All Tasks... -> npm: build
-
-The ZIP output, located in the `dist` directory, contains all required files. Ensure all files are included and modify the `.buildignore` file as needed. This ZIP file is your uploadable asset for the hub.
-
-## **Conclusion**
-
-With this setup, you're ready to begin modding with SPT. If you run into any trouble be sure to check out the [modding documentation on the hub](https://hub.sp-tarkov.com/doc/lexicon/66-modding/). If you really get stuck feel free to join us in the [#mods-development](https://discord.com/channels/875684761291599922/875803116409323562) official Discord channel.
-
-Build something awesome!
+This mod is licensed under the [MIT License](LICENSE).
