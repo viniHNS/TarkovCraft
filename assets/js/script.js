@@ -334,10 +334,9 @@ function addCraft() {
     
     if (!recipe) return;
 
-    // Adiciona nome apenas ao recipe para exibição (não será incluído no JSON)
     recipe.displayName = craftName || `Craft ${crafts.length + 1}`;
     
-    crafts.push(recipe); // Armazena apenas o recipe
+    crafts.push(recipe);
     updateCraftsList();
     resetForm();
 }
