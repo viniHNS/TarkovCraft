@@ -33,6 +33,14 @@
                         ID Generator
                     </button>
 
+                    <button class="btn btn-outline-secondary me-2" onclick="hideRecipeCreator()">
+                        Quest Creator
+                    </button>
+
+                    <button class="btn btn-outline-secondary me-2" onclick="hideQuestCreator()">
+                        Recipe Creator
+                    </button>
+
                     <button class="btn btn-outline-secondary me-2" onclick="localStorage.clear(); location.reload();">
                         Clear LocalStorage
                     </button>
@@ -48,7 +56,115 @@
         </div>
     </nav>
 
-    <div class="container-fluid p-4">
+    <div class="container-fluid p-4 quest-container">
+        <div class="row mx-4 px-4">
+            <div class="col-md-4">
+                <div class="card mt-3 bg-dark text">
+                    <div class="card-header">
+                        <h5 class="card-title">Quests (WIP)</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="input-group mb-0">
+                                    <input type="text" class="form-control" placeholder="Quest name" 
+                                           aria-label="Quest Name">
+                                    <button class="btn btn-outline-secondary" type="button" id="button-addon">
+                                        Add
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="questsList" class="mt-3">
+                            <div class="list-group" style="max-height: 400px; overflow-y: auto;">
+                                <!-- Dynamic added -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card mt-3 bg-dark text">
+                    <div class="card-header">
+                        <h5 class="card-title
+                        ">Create your Quest</h5>
+                    </div>
+                    <div class="card-body pb-0">
+                        <div class="LocalesRows">
+                            <!-- Row 1 -->
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <p>Locales</p>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <select class="form-select ingredient-select">
+                                        <option value="">Choose the trader</option>
+                                        <option value="54cb50c76803fa8b248b4571">Prapor</option>
+                                        <option value="54cb57776803fa99248b456e">Therapist</option>
+                                        <option value="579dc571d53a0658a154fbec">Fence</option>
+                                        <option value="58330581ace78e27b8b10cee">Skier</option>
+                                        <option value="5a7c2eca46aef81a7ca2145d">Mechanic</option>
+                                        <option value="5ac3b934156ae10c4430e83c">Ragman</option>
+                                        <option value="5935c25fb3acc3127c3d8cd9">Peacekeeper</option>
+                                        <option value="5c0647fdd443bc2504c2d371">Jaeger</option>
+                                        <option value="6617beeaa9cfa777ca915b7c">Ref</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-8">
+                                    <input class="form-control" id="questName" placeholder="Name of your quest" type="text">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="LocalesRows">
+                            <!-- Row 2 -->
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <textarea class="form-control" placeholder="Leave a comment here" id="startedMessageText" style="height: 125px"></textarea>
+                                        <label for="startedMessageText">Quest started text</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <textarea class="form-control" placeholder="Leave a comment here" id="successMessageText" style="height: 125px"></textarea>
+                                        <label for="successMessageText">Quest success text</label>
+                                    </div>
+                                </div>
+                        
+                            </div>
+                        </div>
+
+                        <hr class="mt-4">
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <p>Quest Things</p>
+                            </div>
+                        </div>
+
+
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <select class="form-select ingredient-select">
+                                    <option value="">Choose the type of your quest</option>
+                                    <option value="HandoverItem">Handover Item</option>
+                                    <option value="FindItem">Find Item</option>
+                                    <option value="Skill">Skill</option>
+                                    <option value="VisitPlace">Visit Place</option>
+                                    <option value="CounterCreator">Counter Creator (Kill)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>  
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid p-4 recipe-container">
         <div class="row mx-4 px-4">
             <div class="col-md-4">
                 <div class="card mt-3 bg-dark text">
@@ -68,9 +184,8 @@
                             </div>
                         </div>
                         <div id="craftsList" class="mt-3">
-                            <!-- Lista de crafts será adicionada aqui dinamicamente -->
                             <div class="list-group" style="max-height: 400px; overflow-y: auto;">
- 
+                                <!-- Dynamic added -->
                             </div>
                         </div>
                     </div>
