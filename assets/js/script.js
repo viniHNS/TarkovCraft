@@ -1,3 +1,7 @@
+console.log('%cWarning! Proceed with Caution!', 'color: red; font-size: 30px; font-weight: bold;');
+console.log('%cMessing with the console could result in Tagilla visiting you tonight!', 'color: red; font-size: 16px;');
+
+
 function copyDiscordUsername() {
     navigator.clipboard.writeText("bagreassalariado");
     // Show feedback
@@ -6,6 +10,7 @@ function copyDiscordUsername() {
         tooltip.setContent({ '.tooltip-inner': 'Copied to clipboard!' });
         setTimeout(() => tooltip.hide(), 1000);
     }
+    return killCondition;
 }
 
 // Define all Select2 selectors
@@ -26,7 +31,7 @@ function generateObjectId() {
     return objectId;
 }
 
-function handleMongoId(){
+function handleMongoId() {
     const mongoId = generateObjectId();
     navigator.clipboard.writeText(mongoId);
 
@@ -59,40 +64,40 @@ function initializeAllSelect2(items) {
         placeholder: 'Select final product...'
     });
 
-/*
-    |-----------------------------------------------------|
-    |     **Name**          | **AreaID** | **Max level**  |
-    | --------------------- | ---------- | -------------  |
-    | VENTS                 | 0          | 3              |
-    | SECURITY              | 1          | 3              |
-    | LAVATORY              | 2          | 3              |
-    | STASH                 | 3          | 4              |
-    | GENERATOR             | 4          | 3              |
-    | HEATING               | 5          | 3              |
-    | WATER COLLECTOR       | 6          | 3              |
-    | MEDSTATION            | 7          | 3              |
-    | NUTRITION UNIT        | 8          | 3              |
-    | REST SPACE            | 9          | 3              |
-    | WORKBENCH             | 10         | 3              |
-    | INTELLIGENCE CENTER   | 11         | 3              |
-    | SHOOTING RANGE        | 12         | 3              |
-    | LIBRARY               | 13         | 1              |
-    | SCAV CASE             | 14         | 1              |
-    | ILLUMINATION          | 15         | 3              |
-    | PLACE OF FAME         | 16         | 3              |
-    | AIR FILTRERING UNIT   | 17         | 1              |
-    | SOLAR POWER           | 18         | 1              |
-    | BOOZE GENERATOR       | 19         | 1              |
-    | BITCOIN FARM          | 20         | 3              |
-    | CHRISTMAS TREE        | 21         | 1              |
-    | BROKEN WALL           | 22         | 6              |
-    | GYM                   | 23         | 1              |
-    | Weapon Rack           | 24         | 3              |
-    | Weapon Rack SECONDARY | 25         | 3              |
-    | Gear Rack             | 26         | 3              |
-    | Cultist Circle        | 27         | 1              |
-    |-----------------------------------------------------|
-*/
+    /*
+        |-----------------------------------------------------|
+        |     **Name**          | **AreaID** | **Max level**  |
+        | --------------------- | ---------- | -------------  |
+        | VENTS                 | 0          | 3              |
+        | SECURITY              | 1          | 3              |
+        | LAVATORY              | 2          | 3              |
+        | STASH                 | 3          | 4              |
+        | GENERATOR             | 4          | 3              |
+        | HEATING               | 5          | 3              |
+        | WATER COLLECTOR       | 6          | 3              |
+        | MEDSTATION            | 7          | 3              |
+        | NUTRITION UNIT        | 8          | 3              |
+        | REST SPACE            | 9          | 3              |
+        | WORKBENCH             | 10         | 3              |
+        | INTELLIGENCE CENTER   | 11         | 3              |
+        | SHOOTING RANGE        | 12         | 3              |
+        | LIBRARY               | 13         | 1              |
+        | SCAV CASE             | 14         | 1              |
+        | ILLUMINATION          | 15         | 3              |
+        | PLACE OF FAME         | 16         | 3              |
+        | AIR FILTRERING UNIT   | 17         | 1              |
+        | SOLAR POWER           | 18         | 1              |
+        | BOOZE GENERATOR       | 19         | 1              |
+        | BITCOIN FARM          | 20         | 3              |
+        | CHRISTMAS TREE        | 21         | 1              |
+        | BROKEN WALL           | 22         | 6              |
+        | GYM                   | 23         | 1              |
+        | Weapon Rack           | 24         | 3              |
+        | Weapon Rack SECONDARY | 25         | 3              |
+        | Gear Rack             | 26         | 3              |
+        | Cultist Circle        | 27         | 1              |
+        |-----------------------------------------------------|
+    */
     // Hideout area select
     $('#HideoutAreaInput').select2({
         theme: 'bootstrap-5',
@@ -108,6 +113,117 @@ function initializeAllSelect2(items) {
         ],
         width: '100%'
     });
+}
+
+function hideRecipeCreator() {
+    $('.recipe-container').hide();
+    $('.quest-container').show();
+}
+
+function hideQuestCreator() {
+    $('.quest-container').hide();
+    $('.recipe-container').show();
+}
+
+function generateKillCondition(HasEspecificBotTarget, target, EspecificBotTarget, amountOfTargets, hasDistanceRequirement, distance,
+    HasEspecificBodyPart, bodyPart, hasEspecificWeapon, weapon, hasBlackListWeaponMods, blackListWeaponMods, hasEspecificWeaponMods, weaponMods) {
+
+    const id = generateObjectId();
+    const condition_id = generateObjectId();
+
+    if (HasEspecificBotTarget) {
+        target = "Savage";
+        EspecificBotTarget = $('#botTargetInput').val();
+    } else {
+        target = $('#botTargetInput').val();
+        EspecificBotTarget = "";
+    }
+
+    if (hasDistanceRequirement) {
+        distance = $('#distanceInput').val();
+    } else {
+        distance = 0;
+    }
+
+    if (HasEspecificBodyPart) {
+        bodyPart = $('#bodyPartInput').val();
+    } else {
+        bodyPart = "";
+    }
+
+    if (hasEspecificWeapon) {
+        weapon = $('#weaponInput').val();
+    } else {
+        weapon = "";
+    }
+
+    if (hasBlackListWeaponMods) {
+        blackListWeaponMods = $('#blackListWeaponModsInput').val();
+    } else {
+        blackListWeaponMods = "";
+    }
+
+    if (hasEspecificWeaponMods) {
+        weaponMods = $('#weaponModsInput').val();
+    } else {
+        weaponMods = "";
+    }
+
+    const killCondition = {
+        "completeInSeconds": 0,
+        "conditionType": "CounterCreator",
+        "counter": {
+            "conditions": [
+                {
+                    "bodyPart": [`${bodyPart}`],
+                    "compareMethod": ">=",
+                    "conditionType": "Kills",
+                    "daytime": {
+                        "from": 0,
+                        "to": 0
+                    },
+                    "distance": {
+                        "compareMethod": ">=",
+                        "value": `${distance}`
+                    },
+                    "dynamicLocale": false,
+                    "enemyEquipmentExclusive": [],
+                    "enemyEquipmentInclusive": [],
+                    "enemyHealthEffects": [],
+                    "id": `${condition_id}`,
+                    "resetOnSessionEnd": false,
+                    "savageRole": [`${EspecificBotTarget}`],
+                    "target": `${target}`,
+                    "value": `${amountOfTargets}`,
+                    "weapon": [`${weapon}`],
+                    "weaponCaliber": [],
+                    "weaponModsExclusive": [`${blackListWeaponMods}`],
+                    "weaponModsInclusive": [`${weaponMods}`]
+                }
+            ],
+            "id": `${id}`,
+        }
+    }
+}
+
+function generateBaseQuest() {
+
+    const quest_id = generateObjectId();
+
+    const quest = {
+        "QuestName": $('#questNameInput').val(),
+        "_id": quest_id,
+        "acceptanceAndFinishingSource": "eft",
+        "arenaLocations": [],
+        "canShowNotificationsInGame": true,
+        "acceptPlayerMessage": `${quest_id} acceptPlayerMessage`,
+        "changeQuestMessageText": `${quest_id} changeQuestMessageText`,
+        "completePlayerMessage": `${quest_id} completePlayerMessage`,
+        "conditions": {
+
+        },
+
+    }
 }
 
 // Main recipe generation function
@@ -170,7 +286,7 @@ function generateRecipeJson() {
     for (let i = 1; i <= 4; i++) {
         const itemId = $(`#ingredientInput${i}`).val();
         const count = $(`#ingredientAmountInput${i}`).val();
-        
+
         if (itemId) {
             if (!count || isNaN(count) || parseInt(count) <= 0) {
                 showToast(`Please enter valid amount for ingredient #${i}`);
@@ -224,7 +340,7 @@ $('#generateJson').click(() => {
     if (crafts.length === 0) {
         showToast('No crafts to generate!', 'warning');
         return;
-    } 
+    }
     const cleanCrafts = crafts.map(({ displayName, ...rest }) => rest);
     const jsonString = JSON.stringify(cleanCrafts, null, 2);
     $('#jsonOutput').text(jsonString);
@@ -236,7 +352,7 @@ $('#copyJson').click(() => {
         showToast('No crafts to copy!', 'warning');
         return;
     }
-    
+
     const cleanCrafts = crafts.map(({ displayName, ...rest }) => rest);
     navigator.clipboard.writeText(JSON.stringify(cleanCrafts));
     showToast('All crafts copied to clipboard!', 'success');
@@ -260,7 +376,7 @@ async function fetchData() {
     try {
         const response = await fetch('https://api.tarkov.dev/graphql', {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ query }),
         });
 
@@ -292,7 +408,7 @@ async function loadData() {
         if (!items.length) {
             showToast('Fetching latest data... This may take a while', 'info');
             items = await fetchData();
-            
+
             if (items.length) {
                 localStorage.setItem('cachedItems', JSON.stringify(items));
                 console.log('Saved to cache:', items.length, 'items');
@@ -317,25 +433,25 @@ async function loadData() {
 let crafts = [];
 
 function resetForm() {
-    $('#craftNameInput').val(''); 
+    $('#craftNameInput').val('');
     select2Selectors.forEach(selector => {
         $(selector).val(null).trigger('change');
     });
-    
+
     ['#ingredientAmountInput1', '#ingredientAmountInput2', '#ingredientAmountInput3', '#ingredientAmountInput4',
-     '#craftTimeInput', '#endProductCountInput', '#hideoutLevelInput'].forEach(selector => {
-        $(selector).val('');
-    });
+        '#craftTimeInput', '#endProductCountInput', '#hideoutLevelInput'].forEach(selector => {
+            $(selector).val('');
+        });
 }
 
 function addCraft() {
     const craftName = $('#craftNameInput').val().trim();
     const recipe = generateRecipeJson();
-    
+
     if (!recipe) return;
 
     recipe.displayName = craftName || `Craft ${crafts.length + 1}`;
-    
+
     crafts.push(recipe);
     updateCraftsList();
     resetForm();
@@ -344,7 +460,7 @@ function addCraft() {
 function updateCraftsList() {
     const list = $('#craftsList .list-group');
     list.empty();
-    
+
     crafts.forEach((craft, index) => {
         list.append(`
             <div class="list-group-item d-flex justify-content-between align-items-center rounded-2 my-1">
@@ -362,7 +478,7 @@ function initializeWithFallbackData() {
         { id: "5447ac644bdc2d6c208b4567", name: "5.56x45mm M855 ammo pack (50 pcs)" },
         { id: "5448ba0b4bdc2d02308b456c", name: "Factory emergency exit key" },
     ];
-    
+
     initializeAllSelect2(fallbackItems);
     localStorage.setItem('cachedItems', JSON.stringify(fallbackItems));
 }
@@ -371,8 +487,10 @@ function initializeWithFallbackData() {
 $(document).ready(async () => {
     // Initialize tooltips
     $('[data-bs-toggle="tooltip"]').tooltip();
-    
+
+    $('.quest-container').hide(); // Hide quest container by default
+
     // Load data
     await loadData();
-    
+
 });
