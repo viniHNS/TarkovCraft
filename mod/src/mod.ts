@@ -28,6 +28,7 @@ class Mod implements IPostDBLoadMod, IPreSptLoadMod
     {
     // Get SPT code/data we need later
         this.logger = container.resolve<ILogger>("WinstonLogger");
+
     }
 
     public postDBLoad(container: DependencyContainer): void 
@@ -38,8 +39,10 @@ class Mod implements IPostDBLoadMod, IPreSptLoadMod
         // Get all the in-memory json found in /assets/database
         const tables: IDatabaseTables = databaseServer.getTables();
 
+        const newCrafts = Array.isArray(crafts) ? crafts : [];
+
         // Add new recipes
-        for (const craftToAdd of crafts) {
+        for (const craftToAdd of newCrafts) {
             // Check if recipe already exists
             const existingRecipe = tables.hideout.production.recipes.find((recipe) => recipe._id === craftToAdd._id);
             if (!existingRecipe) {
