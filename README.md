@@ -32,10 +32,10 @@ A web tool for creating custom Escape from Tarkov hideout craft recipes.
 
 ### 📌 Step-by-Step Guide
 1. Visit the [Live Demo](https://viniHNS.github.io/TarkovCraft)
-2. In the **Create Recipe** section:
+2. In the **Create a Craft recipe** section:
    - Fill all required fields
    - Use the integrated search to select items
-3. Click `Add Recipe` to save locally
+3. Click `Add` to save locally
 4. Repeat for multiple recipes
 5. Click `Generate JSON` to get:
 ```json
@@ -60,10 +60,4 @@ A web tool for creating custom Escape from Tarkov hideout craft recipes.
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ###### Disclaimer: Not affiliated with Battlestate Games. Data sourced from public API.
-
-
-
-
-
-
 
