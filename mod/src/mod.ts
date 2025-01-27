@@ -15,10 +15,6 @@ import quests from "../quests/quests.json";
 import config from "../config/config.json";
 
 
-import { QuestTypeEnum } from "@spt/models/enums/QuestTypeEnum";
-import { IQuest } from "@spt/models/eft/common/tables/IQuest";
-import { QuestRewardType } from "@spt/models/enums/QuestRewardType";
-
 // -----------------------------
 class Mod implements IPostDBLoadMod, IPreSptLoadMod 
 {
