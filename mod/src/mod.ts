@@ -49,7 +49,6 @@ class Mod implements IPostDBLoadMod, IPreSptLoadMod
         const newCrafts = crafts;
         const newQuests = quests;
 
-
         // Add new recipes
         for (const craftToAdd of newCrafts) {
             // Check if recipe already exists
