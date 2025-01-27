@@ -12,13 +12,22 @@ import { IDatabaseTables } from "@spt/models/spt/server/IDatabaseTables";
 
 import crafts from "../crafts/crafts.json";
 import quests from "../quests/quests.json";
+import config from "../config/config.json";
+
+
 import { QuestTypeEnum } from "@spt/models/enums/QuestTypeEnum";
+import { IQuest } from "@spt/models/eft/common/tables/IQuest";
+import { QuestRewardType } from "@spt/models/enums/QuestRewardType";
 
 // -----------------------------
 class Mod implements IPostDBLoadMod, IPreSptLoadMod 
 {
     private mod: string;
     private logger: ILogger;
+
+    public customLogger(message: string, color: LogTextColor): void {
+        if (config.debug) this.logger.logWithColor(message, color);
+    }
 
     constructor() 
     {
@@ -39,11 +48,9 @@ class Mod implements IPostDBLoadMod, IPreSptLoadMod
         // Get all the in-memory json found in /assets/database
         const tables: IDatabaseTables = databaseServer.getTables();
 
-        let newQuests = Object.values(quests);
-        let newCrafts = Object.values(crafts);
-
-        newCrafts = Array.isArray(crafts) ? crafts : [];
-        newQuests = Array.isArray(quests) ? quests : [];
+        // Add new crafts
+        const newCrafts = crafts;
+        const newQuests = quests;
 
 
         // Add new recipes
@@ -52,35 +59,34 @@ class Mod implements IPostDBLoadMod, IPreSptLoadMod
             const existingRecipe = tables.hideout.production.recipes.find((recipe) => recipe._id === craftToAdd._id);
             if (!existingRecipe) {
                 tables.hideout.production.recipes.push(craftToAdd);
+                this.customLogger(`[ViniHNS] ${this.mod} - Added Recipe ${craftToAdd._id}`, LogTextColor.GREEN);    
             } else {
-                this.logger.logWithColor(
-                    `[ViniHNS] ${this.mod} - Recipe ${craftToAdd._id} already exists`,
-                    LogTextColor.YELLOW
-                );
+                this.customLogger(`[ViniHNS] ${this.mod} - Recipe ${craftToAdd._id} already exists`, LogTextColor.MAGENTA);
             }
         }
 
+    
         // Add new quests
-        for (const questToAdd of newQuests) {
+        for (const questToAdd in newQuests) {
+            this.customLogger(`[ViniHNS] ${this.mod} - Adding Quest ${questToAdd}`, LogTextColor.GREEN);
             // Check if quest exists
-            for(const quest of Object.values(tables.templates.quests)) {
-                if(quest._id === questToAdd._id) {
-                    this.logger.logWithColor(
-                        `[ViniHNS] ${this.mod} - Quest ${questToAdd._id} already exists`,
-                        LogTextColor.YELLOW
-                    );
-                    return;
+            let questExists = false;
+            for(const quest in tables.templates.quests){
+                if(quest === questToAdd) {
+                    this.customLogger(`[ViniHNS] ${this.mod} - Quest ${questToAdd} already exists`, LogTextColor.MAGENTA);
+                    break;
                 }
             }
+            if(questExists) continue;
 
-            questToAdd.type = questToAdd.type as QuestTypeEnum;
+            // Add quest
+            tables.templates.quests[questToAdd] = newQuests[questToAdd];
+            this.customLogger(`[ViniHNS] ${this.mod} - Added Quest ${questToAdd}`, LogTextColor.GREEN);
 
-            tables.templates.quests[questToAdd._id] = questToAdd;
+            
         }
 
-        const existingQuest = tables.templates.quests[newQuests[0]._id];
-            this.logger.logWithColor(`[ViniHNS] ${this.mod} - existingQuest ${existingQuest}`, LogTextColor.GREEN);
-
+        
         this.logger.logWithColor(
             `[ViniHNS] ${this.mod} - Database Loaded`,
             LogTextColor.GREEN
