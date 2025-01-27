@@ -12,6 +12,7 @@ import { IDatabaseTables } from "@spt/models/spt/server/IDatabaseTables";
 
 import crafts from "../crafts/crafts.json";
 import quests from "../quests/quests.json";
+import questLocales from "../quests/questLocales.json";
 import config from "../config/config.json";
 
 
@@ -70,6 +71,7 @@ class Mod implements IPostDBLoadMod, IPreSptLoadMod
             for(const quest in tables.templates.quests){
                 if(quest === questToAdd) {
                     this.customLogger(`[ViniHNS] ${this.mod} - Quest ${questToAdd} already exists`, LogTextColor.MAGENTA);
+                    questExists = true;
                     break;
                 }
             }
@@ -78,8 +80,12 @@ class Mod implements IPostDBLoadMod, IPreSptLoadMod
             // Add quest
             tables.templates.quests[questToAdd] = newQuests[questToAdd];
             this.customLogger(`[ViniHNS] ${this.mod} - Added Quest ${questToAdd}`, LogTextColor.GREEN);
+        }
 
-            
+        // Add quest locales
+        for (const questLocale in questLocales) {
+            tables.locales.global["en"][questLocale] = questLocales[questLocale];
+            this.customLogger(`[${this.mod}] Added Locale ${questLocale}`, LogTextColor.GREEN);
         }
 
         
