@@ -179,9 +179,9 @@ function generateQuestJson() {
             },
             "secretQuest": false,
             "side": "Pmc",
-            "startedMessageText": $("#startedMessage").val(),
+            "startedMessageText": questId + " startedMessageText", // Will be replaced in locales
             "status": 0,
-            "successMessageText": $("#successMessage").val(),
+            "successMessageText": questId + " successMessageText", // Will be replaced in locales
             "traderId": $("#traderSelect").val(),
             "type": questType
         }

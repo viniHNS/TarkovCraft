@@ -12,6 +12,7 @@ import { IDatabaseTables } from "@spt/models/spt/server/IDatabaseTables";
 
 import crafts from "../crafts/crafts.json";
 import quests from "../quests/quests.json";
+import { QuestTypeEnum } from "@spt/models/enums/QuestTypeEnum";
 
 // -----------------------------
 class Mod implements IPostDBLoadMod, IPreSptLoadMod 
@@ -61,18 +62,20 @@ class Mod implements IPostDBLoadMod, IPreSptLoadMod
 
         // Add new quests
         for (const questToAdd of newQuests) {
-            // Check if quest already exists
-            /*
-            if (!existingQuest) {
-                tables.templates.quests[questToAdd._id] = questToAdd;
-                
-            } else {
-                this.logger.logWithColor(
-                    `[ViniHNS] ${this.mod} - Quest ${questToAdd._id} already exists`,
-                    LogTextColor.YELLOW
-                );
+            // Check if quest exists
+            for(const quest of Object.values(tables.templates.quests)) {
+                if(quest._id === questToAdd._id) {
+                    this.logger.logWithColor(
+                        `[ViniHNS] ${this.mod} - Quest ${questToAdd._id} already exists`,
+                        LogTextColor.YELLOW
+                    );
+                    return;
+                }
             }
-            */
+
+            questToAdd.type = questToAdd.type as QuestTypeEnum;
+
+            tables.templates.quests[questToAdd._id] = questToAdd;
         }
 
         const existingQuest = tables.templates.quests[newQuests[0]._id];

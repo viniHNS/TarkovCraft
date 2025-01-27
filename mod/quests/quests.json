@@ -1,13 +1,13 @@
 {
-  "6796c0a9a9a6b5dc58e512a0": {
-    "QuestName": "Vini's Part 1",
-    "_id": "6796c0a9a9a6b5dc58e512a0",
-    "acceptPlayerMessage": "6796c0a9a9a6b5dc58e512a0 acceptPlayerMessage",
+  "67976f10d4c826dc3204acd7": {
+    "QuestName": "Terminator Part 1",
+    "_id": "67976f10d4c826dc3204acd7",
+    "acceptPlayerMessage": "67976f10d4c826dc3204acd7 acceptPlayerMessage",
     "acceptanceAndFinishingSource": "eft",
     "arenaLocations": [],
     "canShowNotificationsInGame": true,
-    "changeQuestMessageText": "6796c0a9a9a6b5dc58e512a0 changeQuestMessageText",
-    "completePlayerMessage": "6796c0a9a9a6b5dc58e512a0 completePlayerMessage",
+    "changeQuestMessageText": "67976f10d4c826dc3204acd7 changeQuestMessageText",
+    "completePlayerMessage": "67976f10d4c826dc3204acd7 completePlayerMessage",
     "conditions": {
       "AvailableForFinish": [
         {
@@ -19,7 +19,7 @@
                 "conditionType": "Kills",
                 "target": "Savage",
                 "savageRole": [],
-                "id": "6796c0a9ebe66b6c48866623",
+                "id": "67976f10f5410dbedecbc71a",
                 "compareMethod": ">=",
                 "daytime": {
                   "from": 0,
@@ -41,20 +41,12 @@
                 "bodyPart": [
                   "Head"
                 ]
-              },
-              {
-                "conditionType": "Location",
-                "target": [
-                  "5714dbc024597771384a510d"
-                ],
-                "id": "6796c0a93114bd2dd20b72d6",
-                "dynamicLocale": false
               }
             ],
-            "id": "6796c0a9390831711c12f543"
+            "id": "67976f1015b9de08c487c3ee"
           },
           "dynamicLocale": false,
-          "id": "6796c0a9d68f7b8a0a4cfb4d",
+          "id": "67976f100047a4eb6b7530ae",
           "type": "Elimination",
           "value": 10
         }
@@ -62,16 +54,16 @@
       "AvailableForStart": [],
       "Fail": []
     },
-    "declinePlayerMessage": "6796c0a9a9a6b5dc58e512a0 declinePlayerMessage",
-    "description": "6796c0a9a9a6b5dc58e512a0 description",
-    "failMessageText": "6796c0a9a9a6b5dc58e512a0 failMessageText",
+    "declinePlayerMessage": "67976f10d4c826dc3204acd7 declinePlayerMessage",
+    "description": "67976f10d4c826dc3204acd7 description",
+    "failMessageText": "67976f10d4c826dc3204acd7 failMessageText",
     "gameModes": [],
     "image": "/files/quest/icon/default.jpg",
     "instantComplete": false,
     "isKey": false,
-    "location": "5714dbc024597771384a510d",
-    "name": "6796c0a9a9a6b5dc58e512a0 name",
-    "note": "6796c0a9a9a6b5dc58e512a0 note",
+    "location": "any",
+    "name": "67976f10d4c826dc3204acd7 name",
+    "note": "67976f10d4c826dc3204acd7 note",
     "progressSource": "eft",
     "rankingModes": [],
     "restartable": false,
@@ -81,17 +73,47 @@
       "Success": [
         {
           "availableInGameEditions": [],
-          "_id": "6796c0a9998bbfd5d452908f",
+          "_id": "67976f10685220ebc67be446",
           "type": "Experience",
           "unknown": false,
           "index": 0,
-          "value": 50000
+          "value": 5000
+        },
+        {
+          "availableInGameEditions": [],
+          "_id": "67976f10b78dbafbe314b152",
+          "type": "TraderStanding",
+          "unknown": false,
+          "index": 1,
+          "target": "54cb50c76803fa8b248b4571",
+          "value": 0.05
+        },
+        {
+          "availableInGameEditions": [],
+          "_id": "67976f10b4714ec5751f0798",
+          "type": "Item",
+          "unknown": false,
+          "index": 2,
+          "items": [
+            {
+              "_id": "67976f109d6a278a65070d24",
+              "_tpl": "5449016a4bdc2d6f028b456f",
+              "upd": {
+                "StackObjectsCount": 15000
+              }
+            }
+          ],
+          "target": "67976f109d6a278a65070d24",
+          "value": 15000,
+          "findInRaid": false
         }
       ]
     },
     "secretQuest": false,
     "side": "Pmc",
+    "startedMessageText": "67976f10d4c826dc3204acd7 startedMessageText",
     "status": 0,
+    "successMessageText": "67976f10d4c826dc3204acd7 successMessageText",
     "traderId": "54cb50c76803fa8b248b4571",
     "type": "Elimination"
   }
