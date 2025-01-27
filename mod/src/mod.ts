@@ -11,7 +11,7 @@ import { IPreSptLoadMod } from "@spt/models/external/IPreSptLoadMod";
 import { IDatabaseTables } from "@spt/models/spt/server/IDatabaseTables";
 
 import crafts from "../crafts/crafts.json";
-
+import quests from "../quests/quests.json";
 
 // -----------------------------
 class Mod implements IPostDBLoadMod, IPreSptLoadMod 
@@ -28,7 +28,6 @@ class Mod implements IPostDBLoadMod, IPreSptLoadMod
     {
     // Get SPT code/data we need later
         this.logger = container.resolve<ILogger>("WinstonLogger");
-
     }
 
     public postDBLoad(container: DependencyContainer): void 
@@ -39,7 +38,12 @@ class Mod implements IPostDBLoadMod, IPreSptLoadMod
         // Get all the in-memory json found in /assets/database
         const tables: IDatabaseTables = databaseServer.getTables();
 
-        const newCrafts = Array.isArray(crafts) ? crafts : [];
+        let newQuests = Object.values(quests);
+        let newCrafts = Object.values(crafts);
+
+        newCrafts = Array.isArray(crafts) ? crafts : [];
+        newQuests = Array.isArray(quests) ? quests : [];
+
 
         // Add new recipes
         for (const craftToAdd of newCrafts) {
@@ -54,6 +58,25 @@ class Mod implements IPostDBLoadMod, IPreSptLoadMod
                 );
             }
         }
+
+        // Add new quests
+        for (const questToAdd of newQuests) {
+            // Check if quest already exists
+            /*
+            if (!existingQuest) {
+                tables.templates.quests[questToAdd._id] = questToAdd;
+                
+            } else {
+                this.logger.logWithColor(
+                    `[ViniHNS] ${this.mod} - Quest ${questToAdd._id} already exists`,
+                    LogTextColor.YELLOW
+                );
+            }
+            */
+        }
+
+        const existingQuest = tables.templates.quests[newQuests[0]._id];
+            this.logger.logWithColor(`[ViniHNS] ${this.mod} - existingQuest ${existingQuest}`, LogTextColor.GREEN);
 
         this.logger.logWithColor(
             `[ViniHNS] ${this.mod} - Database Loaded`,

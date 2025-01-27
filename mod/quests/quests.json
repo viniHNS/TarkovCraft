@@ -1,0 +1,98 @@
+{
+  "6796c0a9a9a6b5dc58e512a0": {
+    "QuestName": "Vini's Part 1",
+    "_id": "6796c0a9a9a6b5dc58e512a0",
+    "acceptPlayerMessage": "6796c0a9a9a6b5dc58e512a0 acceptPlayerMessage",
+    "acceptanceAndFinishingSource": "eft",
+    "arenaLocations": [],
+    "canShowNotificationsInGame": true,
+    "changeQuestMessageText": "6796c0a9a9a6b5dc58e512a0 changeQuestMessageText",
+    "completePlayerMessage": "6796c0a9a9a6b5dc58e512a0 completePlayerMessage",
+    "conditions": {
+      "AvailableForFinish": [
+        {
+          "completeInSeconds": 0,
+          "conditionType": "CounterCreator",
+          "counter": {
+            "conditions": [
+              {
+                "conditionType": "Kills",
+                "target": "Savage",
+                "savageRole": [],
+                "id": "6796c0a9ebe66b6c48866623",
+                "compareMethod": ">=",
+                "daytime": {
+                  "from": 0,
+                  "to": 0
+                },
+                "distance": {
+                  "compareMethod": ">=",
+                  "value": 0
+                },
+                "dynamicLocale": false,
+                "enemyEquipmentExclusive": [],
+                "enemyEquipmentInclusive": [],
+                "enemyHealthEffects": [],
+                "resetOnSessionEnd": false,
+                "weapon": [],
+                "weaponCaliber": [],
+                "weaponModsExclusive": [],
+                "weaponModsInclusive": [],
+                "bodyPart": [
+                  "Head"
+                ]
+              },
+              {
+                "conditionType": "Location",
+                "target": [
+                  "5714dbc024597771384a510d"
+                ],
+                "id": "6796c0a93114bd2dd20b72d6",
+                "dynamicLocale": false
+              }
+            ],
+            "id": "6796c0a9390831711c12f543"
+          },
+          "dynamicLocale": false,
+          "id": "6796c0a9d68f7b8a0a4cfb4d",
+          "type": "Elimination",
+          "value": 10
+        }
+      ],
+      "AvailableForStart": [],
+      "Fail": []
+    },
+    "declinePlayerMessage": "6796c0a9a9a6b5dc58e512a0 declinePlayerMessage",
+    "description": "6796c0a9a9a6b5dc58e512a0 description",
+    "failMessageText": "6796c0a9a9a6b5dc58e512a0 failMessageText",
+    "gameModes": [],
+    "image": "/files/quest/icon/default.jpg",
+    "instantComplete": false,
+    "isKey": false,
+    "location": "5714dbc024597771384a510d",
+    "name": "6796c0a9a9a6b5dc58e512a0 name",
+    "note": "6796c0a9a9a6b5dc58e512a0 note",
+    "progressSource": "eft",
+    "rankingModes": [],
+    "restartable": false,
+    "rewards": {
+      "Fail": [],
+      "Started": [],
+      "Success": [
+        {
+          "availableInGameEditions": [],
+          "_id": "6796c0a9998bbfd5d452908f",
+          "type": "Experience",
+          "unknown": false,
+          "index": 0,
+          "value": 50000
+        }
+      ]
+    },
+    "secretQuest": false,
+    "side": "Pmc",
+    "status": 0,
+    "traderId": "54cb50c76803fa8b248b4571",
+    "type": "Elimination"
+  }
+}

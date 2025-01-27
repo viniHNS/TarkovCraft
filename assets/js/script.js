@@ -10,7 +10,6 @@ function copyDiscordUsername() {
         tooltip.setContent({ '.tooltip-inner': 'Copied to clipboard!' });
         setTimeout(() => tooltip.hide(), 1000);
     }
-    return killCondition;
 }
 
 // Define all Select2 selectors
@@ -19,6 +18,7 @@ const select2Selectors = [
     '#ingredientInput3', '#ingredientInput4',
     '#toolInput1', '#toolInput2', '#toolInput3',
     '#finalProductInput', '#HideoutAreaInput'
+    
 ];
 
 // Function to generate MongoDB-style ObjectId
@@ -37,6 +37,19 @@ function handleMongoId() {
 
     // Show feedback
     showToast(`MongoDB ObjectId copied to clipboard!`, 'success');
+}
+
+function initializeQuestSelect2(quests) {
+    $('#questLock1').select2({
+        theme: 'bootstrap-5',
+        placeholder: 'Select a quest...',
+        data: quests.map(quest => ({
+            id: quest.id,
+            text: quest.name
+        })),
+        width: '100%',
+        allowClear: true
+    });
 }
 
 // Initialize all Select2 dropdowns
@@ -63,6 +76,8 @@ function initializeAllSelect2(items) {
         ...itemSelectConfig,
         placeholder: 'Select final product...'
     });
+
+
 
     /*
         |-----------------------------------------------------|
@@ -125,106 +140,307 @@ function hideQuestCreator() {
     $('.recipe-container').show();
 }
 
-function generateKillCondition(HasEspecificBotTarget, target, EspecificBotTarget, amountOfTargets, hasDistanceRequirement, distance,
-    HasEspecificBodyPart, bodyPart, hasEspecificWeapon, weapon, hasBlackListWeaponMods, blackListWeaponMods, hasEspecificWeaponMods, weaponMods) {
+function generateQuestJson() {
+    const questId = generateObjectId();
 
-    const id = generateObjectId();
-    const condition_id = generateObjectId();
+    let questType = $('#taskTypeSelect').val();
+    if (questType === 'CounterCreator') {
+        questType = 'Elimination';
+    }  
 
-    if (HasEspecificBotTarget) {
-        target = "Savage";
-        EspecificBotTarget = $('#botTargetInput').val();
-    } else {
-        target = $('#botTargetInput').val();
-        EspecificBotTarget = "";
+    return {
+        [questId]: { // Dynamic key based on generated ID
+            "QuestName": $("#questName").val(),
+            "_id": questId,
+            "acceptPlayerMessage": questId + " acceptPlayerMessage", // Will be replaced in locales
+            "acceptanceAndFinishingSource": "eft",
+            "arenaLocations": [],
+            "canShowNotificationsInGame": true,
+            "changeQuestMessageText": questId + " changeQuestMessageText", // Will be replaced in locales
+            "completePlayerMessage": questId + " completePlayerMessage", // Will be replaced in locales
+            "conditions": generateConditions(),
+            "declinePlayerMessage": questId + " declinePlayerMessage", // Will be replaced in locales
+            "description": questId + " description", // Will be replaced in locales
+            "failMessageText": questId + " failMessageText", // Will be replaced in locales
+            "gameModes": [],
+            "image": "/files/quest/icon/default.jpg",
+            "instantComplete": false,
+            "isKey": false,
+            "location": $('#locationSelect').val(),
+            "name": questId + " name", // Will be replaced in locales
+            "note": questId + " note", // Will be replaced in locales
+            "progressSource": "eft",
+            "rankingModes": [],
+            "restartable": false,
+            "rewards": {
+                "Fail": [],
+                "Started": [],
+                "Success": generateRewards(),
+            },
+            "secretQuest": false,
+            "side": "Pmc",
+            "startedMessageText": $("#startedMessage").val(),
+            "status": 0,
+            "successMessageText": $("#successMessage").val(),
+            "traderId": $("#traderSelect").val(),
+            "type": questType
+        }
+    };
+}
+
+function generateConditions() {
+    return {
+        "AvailableForFinish": generateKillConditions(), // Condições para finalizar
+        "AvailableForStart": generateStartConditions(), // Pré-requisitos
+        "Fail": [] // Sem condições de falha
+    };
+}
+// Generate locales based on quest ID
+function generateLocalesJson(questData) {
+    const questId = Object.keys(questData)[0];
+    const availableForFinish = questData[questId].conditions.AvailableForFinish;
+    const locales = {
+        [questId + " name"]: $("#questName").val(),
+        [questId + " description"]: $("#descriptionMessageText").val(),
+        [questId + " successMessageText"]: $("#successMessageText").val(),
+        [questId + " acceptPlayerMessage"]: $("#acceptPlayerMessage").val(),
+        [questId + " declinePlayerMessage"]: $("#declinePlayerMessage").val(),
+        [questId + " completePlayerMessage"]: $("#completePlayerMessage").val()
+    };
+
+    if (availableForFinish.length === 1) {
+        locales[availableForFinish[0].id] = $("#killDescription").val();
+    } else if (availableForFinish.length > 1) {
+        availableForFinish.forEach((item, index) => {
+            locales[item.id] = $("#killDescription" + (index + 1)).val();
+        });
     }
 
-    if (hasDistanceRequirement) {
-        distance = $('#distanceInput').val();
-    } else {
-        distance = 0;
-    }
+    return locales;
+}
 
-    if (HasEspecificBodyPart) {
-        bodyPart = $('#bodyPartInput').val();
-    } else {
-        bodyPart = "";
-    }
+// Gerar condições de kill
+function generateKillConditions() {
+    const conditions = [];
+    const killAmount = $('#killAmount').val();
 
-    if (hasEspecificWeapon) {
-        weapon = $('#weaponInput').val();
-    } else {
-        weapon = "";
-    }
+    if (!killAmount) return conditions;
 
-    if (hasBlackListWeaponMods) {
-        blackListWeaponMods = $('#blackListWeaponModsInput').val();
-    } else {
-        blackListWeaponMods = "";
-    }
-
-    if (hasEspecificWeaponMods) {
-        weaponMods = $('#weaponModsInput').val();
-    } else {
-        weaponMods = "";
-    }
-
+    // Estrutura base do CounterCreator
     const killCondition = {
         "completeInSeconds": 0,
         "conditionType": "CounterCreator",
         "counter": {
-            "conditions": [
-                {
-                    "bodyPart": [`${bodyPart}`],
-                    "compareMethod": ">=",
-                    "conditionType": "Kills",
-                    "daytime": {
-                        "from": 0,
-                        "to": 0
-                    },
-                    "distance": {
-                        "compareMethod": ">=",
-                        "value": `${distance}`
-                    },
-                    "dynamicLocale": false,
-                    "enemyEquipmentExclusive": [],
-                    "enemyEquipmentInclusive": [],
-                    "enemyHealthEffects": [],
-                    "id": `${condition_id}`,
-                    "resetOnSessionEnd": false,
-                    "savageRole": [`${EspecificBotTarget}`],
-                    "target": `${target}`,
-                    "value": `${amountOfTargets}`,
-                    "weapon": [`${weapon}`],
-                    "weaponCaliber": [],
-                    "weaponModsExclusive": [`${blackListWeaponMods}`],
-                    "weaponModsInclusive": [`${weaponMods}`]
-                }
-            ],
-            "id": `${id}`,
-        }
-    }
-}
-
-function generateBaseQuest() {
-
-    const quest_id = generateObjectId();
-
-    const quest = {
-        "QuestName": $('#questNameInput').val(),
-        "_id": quest_id,
-        "acceptanceAndFinishingSource": "eft",
-        "arenaLocations": [],
-        "canShowNotificationsInGame": true,
-        "acceptPlayerMessage": `${quest_id} acceptPlayerMessage`,
-        "changeQuestMessageText": `${quest_id} changeQuestMessageText`,
-        "completePlayerMessage": `${quest_id} completePlayerMessage`,
-        "conditions": {
-
+            "conditions": [],
+            "id": generateObjectId()
         },
+        "dynamicLocale": false,
+        "id": generateObjectId(),
+        "type": "Elimination",
+        "value": parseInt(killAmount)
+    };
 
+    const specificTarget = $('#specificTarget').val();
+
+    // Determinar target e savageRole
+    const nonBossTargets = new Set(['Any', 'Savage', 'AnyPmc', 'Usec', 'Bear', 'pmcBot']);
+    let target, savageRole = [];
+
+    if (specificTarget && !nonBossTargets.has(specificTarget)) {
+        target = 'Savage';
+        savageRole.push(specificTarget);
+    } else {
+        target = specificTarget || 'Any';
     }
+
+
+    // Condição principal de Kills
+    const baseKill = {
+        "conditionType": "Kills",
+        "target": target,
+        "savageRole": savageRole,
+    
+        "id": generateObjectId(),
+        "compareMethod": ">=",
+        "daytime": { "from": 0, "to": 0 },
+        "distance": { "compareMethod": ">=", "value": 0 },
+        dynamicLocale: false,
+        "enemyEquipmentExclusive": [],
+        "enemyEquipmentInclusive": [],
+        "enemyHealthEffects": [],
+        "resetOnSessionEnd": false,
+        "weapon": [],
+        "weaponCaliber": [],
+        "weaponModsExclusive": [],
+        "weaponModsInclusive": []
+    };
+
+    // Adicionar condições extras
+    if ($('#bodyPartCheck').is(':checked')) {
+        baseKill.bodyPart = $('#bodyPartSelect').val(); // Adiciona partes do corpo
+    }
+
+    if ($('#distanceCheck').is(':checked')) {
+        baseKill.distance.value = parseInt($('#killDistance').val()); // Distância
+    }
+
+    if ($('#timeCheck').is(':checked')) {
+        baseKill.daytime = {
+            "from": parseInt($('#timeRequirementFrom').val()),
+            "to": parseInt($('#timeRequirementTo').val())
+        };
+    }
+
+    killCondition.counter.conditions.push(baseKill);
+
+    // Condição de localização (se aplicável)
+    const location = $('#locationSelect').val();
+    if (location && location !== 'any') {
+        killCondition.counter.conditions.push({
+            "conditionType": "Location",
+            "target": [location],
+            "id": generateObjectId(),
+            "dynamicLocale": false
+        });
+    }
+
+    conditions.push(killCondition);
+    return conditions;
 }
+
+function generateRewards() {
+    const rewards = [];
+    
+    $('.reward-row').each(function() {
+        const type = $(this).find('.reward-type-select').val();
+        if (!type) return;
+
+
+        const reward = {
+            "availableInGameEditions": [],
+            "_id": generateObjectId(),
+            "type": type,
+            "unknown": false,
+            "index": rewards.length,
+        };
+
+        switch(type) {
+
+            case 'Money':
+                const currencyType = $(this).find('.money-type-select').val();
+                const moneyAmount = parseInt($(this).find('.money-input').val());
+                if (!currencyType || !moneyAmount) break;
+
+                let moneyRewardId = generateObjectId();
+
+                reward.items = [{
+                    "_id": moneyRewardId,
+                    "_tpl": currencyType,
+                    "upd": { "StackObjectsCount": moneyAmount }
+                }];
+                reward.target = moneyRewardId;
+                reward.type = "Item";
+                reward.value = moneyAmount;
+                reward.findInRaid = false;
+                break;
+
+            case 'Item':
+                const itemId = $(this).find('.reward-item select').val();
+                const rewardId = generateObjectId();
+                if (!itemId) break;
+                
+                reward.findInRaid = false;
+
+                reward.items = [{
+                    "_id": rewardId,
+                    "_tpl": itemId,
+                    "upd": { "StackObjectsCount": 1 }
+                }];
+                reward.value = 1;
+                reward.target = rewardId
+                reward.type = "Item";
+                break;
+
+            case 'Experience':
+                const expValue = parseInt($(this).find('.experience-input').val());
+                if (!expValue) break;
+                reward.type = "Experience";
+                reward.value = expValue;
+                break;
+
+            case 'TraderStanding':
+                const traderId = $(this).find('.trader-standing-select').val();
+                const standingValue = parseFloat($(this).find('.standing-value').val());
+                if (!traderId || isNaN(standingValue)) break;
+                
+                reward.target = traderId;
+                reward.value = standingValue;
+                reward.type = "TraderStanding";
+                
+                break;
+        }
+
+        if (Object.keys(reward).length > 4) { // Basic validation
+            rewards.push(reward);
+        }
+    });
+
+    return rewards;
+}
+
+// Gerar pré-requisitos
+function generateStartConditions() {
+    const conditions = [];
+    let index = 0;
+
+    // Condição de nível
+    if ($('#requiredLevel').val()) {
+        conditions.push({
+            "conditionType": "Level",
+            "compareMethod": ">=",
+            "value": parseInt($('#requiredLevel').val()),
+            "id": generateObjectId(),
+            "index": index++
+        });
+    }
+
+    // Condição de quest prévia
+    if ($('#requiredQuest').val()) {
+        conditions.push({
+            "conditionType": "Quest",
+            "status": [4], // 4 = Completed
+            "target": $('#requiredQuest').val(),
+            "id": generateObjectId(),
+            "index": index++
+        });
+    }
+
+    return conditions;
+}
+
+// Event Listeners
+$('#generateQuestJson').click(() => {
+    const quest = generateQuestJson();
+    if (!quest) return;
+
+    const locales = generateLocalesJson(quest);
+    
+    $('#jsonQuestOutput').text(JSON.stringify(quest, null, 2));
+    $('#jsonLocalesOutput').text(JSON.stringify(locales, null, 2));
+    new bootstrap.Modal('#questJsonModal').show();
+});
+
+// Funções de cópia
+$('#copyQuestJson').click(() => {
+    navigator.clipboard.writeText($('#jsonQuestOutput').text());
+    showToast('Quest JSON copied!', 'success');
+});
+
+$('#copyLocalesJson').click(() => {
+    navigator.clipboard.writeText($('#jsonLocalesOutput').text());
+    showToast('Locales JSON copied!', 'success');
+});
+
 
 // Main recipe generation function
 function generateRecipeJson() {
@@ -347,6 +563,17 @@ $('#generateJson').click(() => {
     new bootstrap.Modal('#jsonModal').show();
 });
 
+$('#TraderStandingInput1').on('input', function() {
+    let value = $(this).val().replace(/[^0-9.,]/g, '');
+    
+    value = value.replace(/([.,])(?=.*[.,])/g, '');
+    
+    value = value.replace(/,/g, '.');
+    
+    $(this).val(value);
+});
+
+
 $('#copyJson').click(() => {
     if (crafts.length === 0) {
         showToast('No crafts to copy!', 'warning');
@@ -393,35 +620,98 @@ async function fetchData() {
     }
 }
 
-async function loadData() {
-    try {
-        let items = [];
-        const cachedData = localStorage.getItem('cachedItems');
+async function fetchQuestData() {
+    const query = `{
+        tasks(lang: en) {
+            id
+            name
+        }
+    }`;
 
-        // Try to load from cache first
-        if (cachedData) {
-            items = JSON.parse(cachedData);
-            console.log('Loaded from cache:', items.length, 'items');
+    try {
+        const response = await fetch('https://api.tarkov.dev/graphql', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        // If no cached data, fetch from API
-        if (!items.length) {
-            showToast('Fetching latest data... This may take a while', 'info');
-            items = await fetchData();
+        const data = await response.json();
+        return data.data.tasks; 
+    } catch (error) {
+        console.error('API Error:', error);
+        showToast('Failed to fetch quests data from API', 'danger');
+        return [];
+    }
+}
 
-            if (items.length) {
-                localStorage.setItem('cachedItems', JSON.stringify(items));
-                console.log('Saved to cache:', items.length, 'items');
+async function loadQuestData() {
+    try {
+        let quests = [];
+        const cachedData = localStorage.getItem('cachedQuests');
+
+        if (cachedData) {
+            quests = JSON.parse(cachedData);
+            console.log('Loaded quests from cache:', quests.length);
+        }
+
+        if (!quests.length) {
+            showToast('Fetching quests data...', 'info');
+            quests = await fetchQuestData();
+            
+            if (quests.length) {
+                localStorage.setItem('cachedQuests', JSON.stringify(quests));
+                console.log('Saved quests to cache:', quests.length);
             }
         }
 
-        // Initialize Select2
-        if (items.length) {
-            initializeAllSelect2(items);
+        if (quests.length) {
+            initializeQuestSelect2(quests);
         } else {
-            showToast('No items available. Using fallback data.', 'warning');
-            initializeWithFallbackData();
+            showToast('No quests available', 'warning');
         }
+
+    } catch (error) {
+        console.error('Quest Load Error:', error);
+        showToast('Failed to load quests', 'danger');
+        return [];
+    }
+}
+
+async function loadData() {
+    try {
+        const cachedData = localStorage.getItem('cachedItems');
+
+        if (cachedData) {
+            items = JSON.parse(cachedData); // Atualiza a variável global
+            console.log('Loaded from cache:', items.length, 'items');
+            initializeAllSelect2(items);
+        }
+
+        if (!items.length) {
+            showToast('Fetching latest data...', 'info');
+            items = await fetchData(); // Atualiza a variável global
+            
+            if (items.length) {
+                localStorage.setItem('cachedItems', JSON.stringify(items));
+                console.log('Saved to cache:', items.length, 'items');
+                initializeAllSelect2(items);
+            }
+        }
+
+        // Inicializar o primeiro reward item select
+        $('#rewardItemInput1').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Select item...',
+            data: items.map(item => ({
+                id: item.id,
+                text: `${item.name} (${item.id})`
+            })),
+            width: '100%'
+        });
 
     } catch (error) {
         console.error('Load Error:', error);
@@ -431,6 +721,7 @@ async function loadData() {
 }
 
 let crafts = [];
+let items = [];
 
 function resetForm() {
     $('#craftNameInput').val('');
@@ -483,6 +774,91 @@ function initializeWithFallbackData() {
     localStorage.setItem('cachedItems', JSON.stringify(fallbackItems));
 }
 
+let rewardIndex = 1;
+
+// Função para adicionar nova recompensa
+function addRewardRow() {
+    if(items.length === 0) {
+        showToast('Items data not loaded yet!', 'warning');
+        return;
+    }
+
+    const original = $('.reward-row:first');
+    const newRow = original.clone(true);
+    
+    // Resetar valores
+    newRow.find('select').val('');
+    newRow.find('input').val('');
+    newRow.find('.remove-reward').removeClass('d-none');
+    
+    // Gerar novo ID único
+    const newIndex = Date.now();
+    newRow.attr('data-reward-index', newIndex);
+    
+    // Atualizar IDs dos elementos
+    newRow.find('.reward-item-select').attr('id', `rewardItem${newIndex}`);
+    
+    // Inicializar Select2 para o novo item
+    newRow.find('.reward-item-select').select2({
+        theme: 'bootstrap-5',
+        placeholder: 'Select item...',
+        data: items.map(item => ({
+            id: item.id,
+            text: `${item.name} (${item.id})`
+        })),
+        width: '100%'
+    });
+    
+    // Inserir antes do botão de adicionar
+    newRow.insertBefore('#addReward').hide().slideDown();
+    
+    // Esconder botão de remover se for o único item
+    if($('.reward-row').length > 1) {
+        newRow.find('.remove-reward').removeClass('d-none');
+    }
+}
+
+// Remover recompensa
+$(document).on('click', '.remove-reward', function() {
+    $(this).closest('.reward-row').slideUp(() => {
+        $(this).remove();
+        // Atualizar visibilidade dos botões de remover
+        const remaining = $('.reward-row').length;
+        if(remaining === 1) {
+            $('.remove-reward').addClass('d-none');
+        }
+    });
+});
+
+// Controle de visibilidade
+$(document).on('change', '.reward-type-select', function() {
+    const parent = $(this).closest('.reward-row');
+    const type = $(this).val();
+    
+    // Esconder todos os campos
+    parent.find('.reward-item, .reward-experience, .money-type, .money-amount, .trader-select, .standing-input')
+          .addClass('d-none');
+    
+    // Mostrar campos relevantes
+    switch(type) {
+        case 'Item':
+            parent.find('.reward-item').removeClass('d-none');
+            break;
+        case 'Experience':
+            parent.find('.reward-experience').removeClass('d-none');
+            break;
+        case 'Money':
+            parent.find('.money-type, .money-amount').removeClass('d-none');
+            break;
+        case 'TraderStanding':
+            parent.find('.trader-select, .standing-input').removeClass('d-none');
+            break;
+    }
+});
+
+// Vincular evento de adição
+$('#addReward').click(addRewardRow);
+
 // Initial setup
 $(document).ready(async () => {
     // Initialize tooltips
@@ -490,7 +866,45 @@ $(document).ready(async () => {
 
     $('.quest-container').hide(); // Hide quest container by default
 
-    // Load data
+    // Mostrar/ocultar formulário de kill
+    $('#taskTypeSelect').change(function() {
+        if ($(this).val() === 'CounterCreator') {
+            $('.kill').show();
+        } else {
+            $('.kill').hide();
+        }
+    });
+
+    // Habilitar/desabilitar inputs baseado nas checkboxes
+    $('#bodyPartCheck').change(function() {
+        $('#bodyPartSelect').prop('disabled', !this.checked);
+    });
+
+    $('#distanceCheck').change(function() {
+        $('#killDistance').prop('disabled', !this.checked);
+    });
+
+    $('#timeCheck').change(function() {
+        $('#timeRequirementFrom, #timeRequirementTo').prop('disabled', !this.checked);
+    });
+
+    $('#questLockCheck').change(function() {
+        $('#questLock1').prop('disabled', !this.checked);
+    });
+
+    $('#levelLockCheck').change(function() {
+        $('#levelLockInput').prop('disabled', !this.checked);
+    });
+
+    
+    $('#questLock1').select2({
+        theme: 'bootstrap-5',
+        placeholder: 'Select a quest...',
+        width: '100%'
+    });
+
+
+    await loadQuestData();
     await loadData();
 
 });
