@@ -183,151 +183,162 @@
                                 </select>
                             </div>
                             <div class="col-md-4">
-                                <button class="btn btn-outline-secondary" type="button">Add quest task</button>
+                                <button class="btn btn-outline-secondary" id="addQuestTask" type="button">Add quest task</button>
                             </div>
                         </div>
                         <hr class="mt-4">
+                        <div class="kill-tasks-container">
+                            <!-- As tarefas serão adicionadas aqui -->
+                        </div>
+                        <template id="killTaskTemplate">
+                            <div class="kill-task mb-4 p-3 border rounded">
+                                <button class="btn btn-danger btn-sm float-end remove-kill-task">×</button>
+                                <div class="row mb-3">
+                                    <div class="row mt-4">
+                                        <div class="col-md-12">
+                                            <p>Counter Creator (Kill) Things</p>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-12">
+                                            <input class="form-control" id="killDescription" placeholder="Description of the kill Task" type="text">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-4">
+                                            <select class="form-select ingredient-select" id="specificTarget">
+                                                <option value="">Choose the target</option>
+                                                <option value="Any">Any</option>
+                                                <option value="Savage">Scav</option>
+                                                <option value="AnyPmc">PMCs</option>
+                                                <option value="Usec">Usec</option>
+                                                <option value="Bear">Bear</option>
+                                                <option value="bossKilla">Killa</option>
+                                                <option value="bossTagilla">Tagilla</option>
+                                                <option value="bossBully">Reshala</option>
+                                                <option value="followerBully">Reshala's Bodyguards</option>
+                                                <option value="bossKojaniy">Schturman </option>
+                                                <option value="bossGluhar">Gluhar</option>
+                                                <option value="followerGluharAssault">Gluhar Guard Assault</option>
+                                                <option value="followerGluharScout">Gluhar Guard Scout</option>
+                                                <option value="followerGluharSecurity">Gluhar Guard Security</option>
+                                                <option value="followerGluharSnipe">Gluhar Guard Sniper</option>
+                                                <option value="pmcBot">Raider</option>
+                                                <option value="bossSanitar">Sanitar </option>
+                                                <option value="followerSanitar">Sanitar Bodyguards</option>
+                                                <option value="bossKnight">Knight</option>
+                                                <option value="followerBigPipe">Big Pipe</option>
+                                                <option value="followerBirdEye">Bird Eye</option>
+                                                <option value="exUsec">Rogue</option>
+                                                <option value="marksman">Sniper Scavs</option>
+                                                <option value="sectantPriest">Cultist Priest</option>
+                                                <option value="sectantWarrior">Cultist Warrior</option>
+                                                <option value="arenaFighterEvent">Bloodhound</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <input class="form-control" id="killAmount" placeholder="Amount of kills" type="number">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <select class="form-select ingredient-select" id="locationSelect">
+                                                <option value="">Location to complete</option>
+                                                <option value="any">Any</option>
+                                                <option value="5714dbc024597771384a510d">Interchange</option>
+                                                <option value="55f2d3fd4bdc2d5f408b4567">Factory day</option>
+                                                <option value="59fc81d786f774390775787e">Factory night</option>
+                                                <option value="56f40101d2720b2a4d8b45d6">Customs</option>
+                                                <option value="5704e3c2d2720bac5b8b4567">Woods</option>
+                                                <option value="5704e554d2720bac5b8b456e">Shoreline</option>
+                                                <option value="5704e5fad2720bc05b8b4567">Reserve</option>
+                                                <option value="5b0fc42d86f7744a585f9105">Labs</option>
+                                                <option value="5704e4dad2720bb55b8b4567">Lighthouse</option>
+                                                <option value="5714dc692459777137212e12">Streets of Tarkov</option>
+                                                <option value="653e6760052c01c1c805532f">Ground Zero</option>
+                                            </select>
+                                        </div>
+                                    </div>
+        
+        
+        
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="" id="bodyPartCheck">
+                                                <label class="form-check-label" for="bodyPartCheck">
+                                                    Has to be especific body part?
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <select class="form-select ingredient-select" id="bodyPartSelect" multiple disabled>
+                                                <option value="Head">Head</option>
+                                                <option value="Chest">Chest</option>
+                                                <option value="Stomach">Stomach</option>
+                                                <option value="LeftArm">Left Arm</option>
+                                                <option value="RightArm">Right Arm</option>
+                                                <option value="LeftLeg">Left Leg</option>
+                                                <option value="RightLeg">Right Leg</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="" id="distanceCheck">
+                                                <label class="form-check-label" for="distanceCheck">
+                                                    Has distance requirement?
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <input class="form-control" id="killDistance" placeholder="Distance in meters" type="number" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="" id="timeCheck">
+                                                <label class="form-check-label" for="timeCheck">
+                                                    Has time requirement?
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <input class="form-control" id="timeRequirementFrom" placeholder="24h format (From)" type="number" disabled>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <input class="form-control" id="timeRequirementTo" placeholder="24h format (To)" type="number" disabled>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="" id="questLockCheck">
+                                                <label class="form-check-label" for="questLockCheck">
+                                                    Lock behind quest?
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <select class="form-select tool-select" id="questLock1" disabled>
+                                                <option></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-4 pb-4">
+                                        <div class="col-md-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="" id="levelLockCheck">
+                                                <label class="form-check-label" for="levelLockCheck">
+                                                    Lock behind level?
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <input class="form-control" id="levelLockInput" placeholder="Level" type="number" disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
                         <div class="kill" style="display: none;">
-                            <div class="row mt-4">
-                                <div class="col-md-12">
-                                    <p>Counter Creator (Kill) Things</p>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-md-12">
-                                    <input class="form-control" id="killDescription" placeholder="Description of the kill Task" type="text">
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-md-4">
-                                    <select class="form-select ingredient-select" id="specificTarget">
-                                        <option value="">Choose the target</option>
-                                        <option value="Any">Any</option>
-                                        <option value="Savage">Scav</option>
-                                        <option value="AnyPmc">PMCs</option>
-                                        <option value="Usec">Usec</option>
-                                        <option value="Bear">Bear</option>
-                                        <option value="bossKilla">Killa</option>
-                                        <option value="bossTagilla">Tagilla</option>
-                                        <option value="bossBully">Reshala</option>
-                                        <option value="followerBully">Reshala's Bodyguards</option>
-                                        <option value="bossKojaniy">Schturman </option>
-                                        <option value="bossGluhar">Gluhar</option>
-                                        <option value="followerGluharAssault">Gluhar Guard Assault</option>
-                                        <option value="followerGluharScout">Gluhar Guard Scout</option>
-                                        <option value="followerGluharSecurity">Gluhar Guard Security</option>
-                                        <option value="followerGluharSnipe">Gluhar Guard Sniper</option>
-                                        <option value="pmcBot">Raider</option>
-                                        <option value="bossSanitar">Sanitar </option>
-                                        <option value="followerSanitar">Sanitar Bodyguards</option>
-                                        <option value="bossKnight">Knight</option>
-                                        <option value="followerBigPipe">Big Pipe</option>
-                                        <option value="followerBirdEye">Bird Eye</option>
-                                        <option value="exUsec">Rogue</option>
-                                        <option value="marksman">Sniper Scavs</option>
-                                        <option value="sectantPriest">Cultist Priest</option>
-                                        <option value="sectantWarrior">Cultist Warrior</option>
-                                        <option value="arenaFighterEvent">Bloodhound</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <input class="form-control" id="killAmount" placeholder="Amount of kills" type="number">
-                                </div>
-                                <div class="col-md-4">
-                                    <select class="form-select ingredient-select" id="locationSelect">
-                                        <option value="">Location to complete</option>
-                                        <option value="any">Any</option>
-                                        <option value="5714dbc024597771384a510d">Interchange</option>
-                                        <option value="55f2d3fd4bdc2d5f408b4567">Factory day</option>
-                                        <option value="59fc81d786f774390775787e">Factory night</option>
-                                        <option value="56f40101d2720b2a4d8b45d6">Customs</option>
-                                        <option value="5704e3c2d2720bac5b8b4567">Woods</option>
-                                        <option value="5704e554d2720bac5b8b456e">Shoreline</option>
-                                        <option value="5704e5fad2720bc05b8b4567">Reserve</option>
-                                        <option value="5b0fc42d86f7744a585f9105">Labs</option>
-                                        <option value="5704e4dad2720bb55b8b4567">Lighthouse</option>
-                                        <option value="5714dc692459777137212e12">Streets of Tarkov</option>
-                                        <option value="653e6760052c01c1c805532f">Ground Zero</option>
-                                    </select>
-                                </div>
-                            </div>
-
-
-
-                            <div class="row mb-3">
-                                <div class="col-md-3">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="" id="bodyPartCheck">
-                                        <label class="form-check-label" for="bodyPartCheck">
-                                            Has to be especific body part?
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <select class="form-select ingredient-select" id="bodyPartSelect" multiple disabled>
-                                        <option value="Head">Head</option>
-                                        <option value="Chest">Chest</option>
-                                        <option value="Stomach">Stomach</option>
-                                        <option value="LeftArm">Left Arm</option>
-                                        <option value="RightArm">Right Arm</option>
-                                        <option value="LeftLeg">Left Leg</option>
-                                        <option value="RightLeg">Right Leg</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="" id="distanceCheck">
-                                        <label class="form-check-label" for="distanceCheck">
-                                            Has distance requirement?
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <input class="form-control" id="killDistance" placeholder="Distance in meters" type="number" disabled>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-md-2">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="" id="timeCheck">
-                                        <label class="form-check-label" for="timeCheck">
-                                            Has time requirement?
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <input class="form-control" id="timeRequirementFrom" placeholder="24h format (From)" type="number" disabled>
-                                </div>
-                                <div class="col-md-2">
-                                    <input class="form-control" id="timeRequirementTo" placeholder="24h format (To)" type="number" disabled>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="" id="questLockCheck">
-                                        <label class="form-check-label" for="questLockCheck">
-                                            Lock behind quest?
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <select class="form-select tool-select" id="questLock1" disabled>
-                                        <option></option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="row mb-4 pb-4">
-                                <div class="col-md-2">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="" id="levelLockCheck">
-                                        <label class="form-check-label" for="levelLockCheck">
-                                            Lock behind level?
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <input class="form-control" id="levelLockInput" placeholder="Level" type="number" disabled>
-                                </div>
-                            </div>
+                            
                         </div>
 
                         <hr class="mt-4">
@@ -423,13 +434,13 @@
                                     <div class="row">
                                         <!-- Quest.json -->
                                         <div class="col-md-6 border-end">
-                                            <h6>quests/YourQuestName.json</h6>
+                                            <h6>quests.json</h6>
                                             <pre id="jsonQuestOutput" class="text-white"></pre>
                                         </div>
 
                                         <!-- Locales.json -->
                                         <div class="col-md-6">
-                                            <h6>locales/en/YourQuestName.json</h6>
+                                            <h6>locales.json</h6>
                                             <pre id="jsonLocalesOutput" class="text-white"></pre>
                                         </div>
                                     </div>
