@@ -195,6 +195,7 @@ function generateConditions() {
         "Fail": [] // Sem condições de falha
     };
 }
+
 // Generate locales based on quest ID
 function generateLocalesJson(questData) {
     const questId = Object.keys(questData)[0];
@@ -222,7 +223,8 @@ function generateLocalesJson(questData) {
 // Gerar condições de kill
 function generateKillConditions() {
     const conditions = [];
-    const killAmount = $('#killAmount').val();
+    const taskElement = $(this);
+    const killAmount = taskElement.find('[id$="_killAmount"]').val();
 
     if (!killAmount) return conditions;
 
@@ -240,7 +242,7 @@ function generateKillConditions() {
         "value": parseInt(killAmount)
     };
 
-    const specificTarget = $('#specificTarget').val();
+    const specificTarget = taskElement.find('[id$="_specificTarget"]').val();
 
     // Determinar target e savageRole
     const nonBossTargets = new Set(['Any', 'Savage', 'AnyPmc', 'Usec', 'Bear', 'pmcBot']);
@@ -277,24 +279,29 @@ function generateKillConditions() {
 
     // Adicionar condições extras
     if ($('#bodyPartCheck').is(':checked')) {
-        baseKill.bodyPart = $('#bodyPartSelect').val(); // Adiciona partes do corpo
+        //baseKill.bodyPart = $('#bodyPartSelect').val(); // Adiciona partes do corpo
+        baseKill.bodyPart = taskElement.find('[id$="_bodyPartSelect"]').val();
     }
 
     if ($('#distanceCheck').is(':checked')) {
-        baseKill.distance.value = parseInt($('#killDistance').val()); // Distância
+        
+        //baseKill.distance.value = parseInt($('#killDistance').val()); // Distância
+        baseKill.distance.value = parseInt(taskElement.find('[id$="_killDistance"]').val()); // Distância
     }
 
     if ($('#timeCheck').is(':checked')) {
         baseKill.daytime = {
-            "from": parseInt($('#timeRequirementFrom').val()),
-            "to": parseInt($('#timeRequirementTo').val())
+            //"from": parseInt($('#timeRequirementFrom').val()),
+            //"to": parseInt($('#timeRequirementTo').val())
+            "from": parseInt(taskElement.find('[id$="_timeRequirementFrom"]').val()),
+            "to": parseInt(taskElement.find('[id$="_timeRequirementTo"]').val())
         };
     }
 
     killCondition.counter.conditions.push(baseKill);
 
     // Condição de localização (se aplicável)
-    const location = $('#locationSelect').val();
+    const location = taskElement.find('[id$="_locationSelect"]').val();
     if (location && location !== 'any') {
         killCondition.counter.conditions.push({
             "conditionType": "Location",
@@ -866,13 +873,29 @@ $(document).ready(async () => {
 
     $('.quest-container').hide(); // Hide quest container by default
 
-    // Mostrar/ocultar formulário de kill
-    $('#taskTypeSelect').change(function() {
-        if ($(this).val() === 'CounterCreator') {
-            $('.kill').show();
+    $('#addQuestTask').click(function() {
+        const taskType = $('#taskTypeSelect').val();
+        
+        if (taskType === 'CounterCreator') {
+            const template = document.getElementById('killTaskTemplate');
+            const clone = template.content.cloneNode(true);
+            
+            // Torna os IDs únicos
+            const timestamp = Date.now();
+            $(clone).find('select, input').each(function() {
+                const newId = $(this).attr('id') + '_' + timestamp;
+                $(this).attr('id', newId);
+            });
+            
+            $('.kill-tasks-container').append(clone);
         } else {
-            $('.kill').hide();
+            showToast('Select "Counter Creator" first!', 'warning');
         }
+    });
+    
+    // Remover tarefa
+    $(document).on('click', '.remove-kill-task', function() {
+        $(this).closest('.kill-task').remove();
     });
 
     // Habilitar/desabilitar inputs baseado nas checkboxes
