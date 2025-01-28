@@ -228,14 +228,12 @@ function generateLocalesJson(questData) {
 function generateKillConditions() {
     const conditions = [];
     
-    // Iterate through each kill task container
     $('.kill-task').each(function() {
         const $taskElement = $(this);
-        const killAmount = $taskElement.find('[id$="_killAmount"]').val();
+        const killAmount = $taskElement.find('[id^="killAmount_"]').val();
 
         if (!killAmount) return;
 
-        // Base structure for CounterCreator
         const killCondition = {
             "completeInSeconds": 0,
             "conditionType": "CounterCreator",
@@ -249,11 +247,10 @@ function generateKillConditions() {
             "value": parseInt(killAmount)
         };
 
-        const specificTarget = $taskElement.find('[id$="_specificTarget"]').val();
+        const specificTarget = $taskElement.find('[id^="specificTarget_"]').val();
         const nonBossTargets = new Set(['Any', 'Savage', 'AnyPmc', 'Usec', 'Bear', 'pmcBot']);
         let target, savageRole = [];
 
-        // Determine target and savageRole
         if (specificTarget && !nonBossTargets.has(specificTarget)) {
             target = 'Savage';
             savageRole.push(specificTarget);
@@ -261,7 +258,6 @@ function generateKillConditions() {
             target = specificTarget || 'Any';
         }
 
-        // Base kill condition
         const baseKill = {
             "conditionType": "Kills",
             "target": target,
@@ -281,33 +277,28 @@ function generateKillConditions() {
             "weaponModsInclusive": []
         };
 
-        // Check for body part condition
-        if ($taskElement.find('[id$="_bodyPartCheck"]').is(':checked')) {
-            baseKill.bodyPart = $taskElement.find('[id$="_bodyPartSelect"]').val();
+        if ($taskElement.find('[id^="bodyPartCheck_"]').is(':checked')) {
+            baseKill.bodyPart = $taskElement.find('[id^="bodyPartSelect_"]').val();
         }
 
-        // Check for distance condition
-        if ($taskElement.find('[id$="_distanceCheck"]').is(':checked')) {
-            const distance = parseInt($taskElement.find('[id$="_killDistance"]').val());
+        if ($taskElement.find('[id^="distanceCheck_"]').is(':checked')) {
+            const distance = parseInt($taskElement.find('[id^="killDistance_"]').val());
             if (!isNaN(distance)) {
                 baseKill.distance.value = distance;
             }
         }
 
-        // Check for time condition
-        if ($taskElement.find('[id$="_timeCheck"]').is(':checked')) {
-            const from = parseInt($taskElement.find('[id$="_timeRequirementFrom"]').val());
-            const to = parseInt($taskElement.find('[id$="_timeRequirementTo"]').val());
+        if ($taskElement.find('[id^="timeCheck_"]').is(':checked')) {
+            const from = parseInt($taskElement.find('[id^="timeRequirementFrom_"]').val());
+            const to = parseInt($taskElement.find('[id^="timeRequirementTo_"]').val());
             if (!isNaN(from) && !isNaN(to)) {
                 baseKill.daytime = { from, to };
             }
         }
 
-        // Add base kill condition
         killCondition.counter.conditions.push(baseKill);
 
-        // Check for location condition
-        const location = $taskElement.find('[id$="_locationSelect"]').val();
+        const location = $taskElement.find('[id^="locationSelect_"]').val();
         if (location && location !== 'any') {
             killCondition.counter.conditions.push({
                 "conditionType": "Location",
