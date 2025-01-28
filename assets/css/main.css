@@ -110,4 +110,13 @@ body {
     max-width: 90%;
 }
 
+.kill-task {
+    background: rgba(255, 255, 255, 0.05);
+    position: relative;
+}
+.remove-kill-task {
+    padding: 0 5px;
+    line-height: 1;
+}
+
 
