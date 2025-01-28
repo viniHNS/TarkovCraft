@@ -18,7 +18,7 @@ const select2Selectors = [
     '#ingredientInput3', '#ingredientInput4',
     '#toolInput1', '#toolInput2', '#toolInput3',
     '#finalProductInput', '#HideoutAreaInput'
-    
+
 ];
 
 // Function to generate MongoDB-style ObjectId
@@ -146,7 +146,7 @@ function generateQuestJson() {
     let questType = $('#taskTypeSelect').val();
     if (questType === 'CounterCreator') {
         questType = 'Elimination';
-    }  
+    }
 
     return {
         [questId]: { // Dynamic key based on generated ID
@@ -189,6 +189,10 @@ function generateQuestJson() {
 }
 
 function generateConditions() {
+
+    console.log(generateKillConditions());
+    console.log(generateStartConditions());
+
     return {
         "AvailableForFinish": generateKillConditions(), // Condições para finalizar
         "AvailableForStart": generateStartConditions(), // Pré-requisitos
@@ -223,102 +227,106 @@ function generateLocalesJson(questData) {
 // Gerar condições de kill
 function generateKillConditions() {
     const conditions = [];
-    const taskElement = $(this);
-    const killAmount = taskElement.find('[id$="_killAmount"]').val();
-
-    if (!killAmount) return conditions;
-
-    // Estrutura base do CounterCreator
-    const killCondition = {
-        "completeInSeconds": 0,
-        "conditionType": "CounterCreator",
-        "counter": {
-            "conditions": [],
-            "id": generateObjectId()
-        },
-        "dynamicLocale": false,
-        "id": generateObjectId(),
-        "type": "Elimination",
-        "value": parseInt(killAmount)
-    };
-
-    const specificTarget = taskElement.find('[id$="_specificTarget"]').val();
-
-    // Determinar target e savageRole
-    const nonBossTargets = new Set(['Any', 'Savage', 'AnyPmc', 'Usec', 'Bear', 'pmcBot']);
-    let target, savageRole = [];
-
-    if (specificTarget && !nonBossTargets.has(specificTarget)) {
-        target = 'Savage';
-        savageRole.push(specificTarget);
-    } else {
-        target = specificTarget || 'Any';
-    }
-
-
-    // Condição principal de Kills
-    const baseKill = {
-        "conditionType": "Kills",
-        "target": target,
-        "savageRole": savageRole,
     
-        "id": generateObjectId(),
-        "compareMethod": ">=",
-        "daytime": { "from": 0, "to": 0 },
-        "distance": { "compareMethod": ">=", "value": 0 },
-        dynamicLocale: false,
-        "enemyEquipmentExclusive": [],
-        "enemyEquipmentInclusive": [],
-        "enemyHealthEffects": [],
-        "resetOnSessionEnd": false,
-        "weapon": [],
-        "weaponCaliber": [],
-        "weaponModsExclusive": [],
-        "weaponModsInclusive": []
-    };
+    // Iterate through each kill task container
+    $('.kill-task').each(function() {
+        const $taskElement = $(this);
+        const killAmount = $taskElement.find('[id$="_killAmount"]').val();
 
-    // Adicionar condições extras
-    if ($('#bodyPartCheck').is(':checked')) {
-        //baseKill.bodyPart = $('#bodyPartSelect').val(); // Adiciona partes do corpo
-        baseKill.bodyPart = taskElement.find('[id$="_bodyPartSelect"]').val();
-    }
+        if (!killAmount) return;
 
-    if ($('#distanceCheck').is(':checked')) {
-        
-        //baseKill.distance.value = parseInt($('#killDistance').val()); // Distância
-        baseKill.distance.value = parseInt(taskElement.find('[id$="_killDistance"]').val()); // Distância
-    }
-
-    if ($('#timeCheck').is(':checked')) {
-        baseKill.daytime = {
-            //"from": parseInt($('#timeRequirementFrom').val()),
-            //"to": parseInt($('#timeRequirementTo').val())
-            "from": parseInt(taskElement.find('[id$="_timeRequirementFrom"]').val()),
-            "to": parseInt(taskElement.find('[id$="_timeRequirementTo"]').val())
-        };
-    }
-
-    killCondition.counter.conditions.push(baseKill);
-
-    // Condição de localização (se aplicável)
-    const location = taskElement.find('[id$="_locationSelect"]').val();
-    if (location && location !== 'any') {
-        killCondition.counter.conditions.push({
-            "conditionType": "Location",
-            "target": [location],
+        // Base structure for CounterCreator
+        const killCondition = {
+            "completeInSeconds": 0,
+            "conditionType": "CounterCreator",
+            "counter": {
+                "conditions": [],
+                "id": generateObjectId()
+            },
+            "dynamicLocale": false,
             "id": generateObjectId(),
-            "dynamicLocale": false
-        });
-    }
+            "type": "Elimination",
+            "value": parseInt(killAmount)
+        };
 
-    conditions.push(killCondition);
+        const specificTarget = $taskElement.find('[id$="_specificTarget"]').val();
+        const nonBossTargets = new Set(['Any', 'Savage', 'AnyPmc', 'Usec', 'Bear', 'pmcBot']);
+        let target, savageRole = [];
+
+        // Determine target and savageRole
+        if (specificTarget && !nonBossTargets.has(specificTarget)) {
+            target = 'Savage';
+            savageRole.push(specificTarget);
+        } else {
+            target = specificTarget || 'Any';
+        }
+
+        // Base kill condition
+        const baseKill = {
+            "conditionType": "Kills",
+            "target": target,
+            "savageRole": savageRole,
+            "id": generateObjectId(),
+            "compareMethod": ">=",
+            "daytime": { "from": 0, "to": 0 },
+            "distance": { "compareMethod": ">=", "value": 0 },
+            "dynamicLocale": false,
+            "enemyEquipmentExclusive": [],
+            "enemyEquipmentInclusive": [],
+            "enemyHealthEffects": [],
+            "resetOnSessionEnd": false,
+            "weapon": [],
+            "weaponCaliber": [],
+            "weaponModsExclusive": [],
+            "weaponModsInclusive": []
+        };
+
+        // Check for body part condition
+        if ($taskElement.find('[id$="_bodyPartCheck"]').is(':checked')) {
+            baseKill.bodyPart = $taskElement.find('[id$="_bodyPartSelect"]').val();
+        }
+
+        // Check for distance condition
+        if ($taskElement.find('[id$="_distanceCheck"]').is(':checked')) {
+            const distance = parseInt($taskElement.find('[id$="_killDistance"]').val());
+            if (!isNaN(distance)) {
+                baseKill.distance.value = distance;
+            }
+        }
+
+        // Check for time condition
+        if ($taskElement.find('[id$="_timeCheck"]').is(':checked')) {
+            const from = parseInt($taskElement.find('[id$="_timeRequirementFrom"]').val());
+            const to = parseInt($taskElement.find('[id$="_timeRequirementTo"]').val());
+            if (!isNaN(from) && !isNaN(to)) {
+                baseKill.daytime = { from, to };
+            }
+        }
+
+        // Add base kill condition
+        killCondition.counter.conditions.push(baseKill);
+
+        // Check for location condition
+        const location = $taskElement.find('[id$="_locationSelect"]').val();
+        if (location && location !== 'any') {
+            killCondition.counter.conditions.push({
+                "conditionType": "Location",
+                "target": [location],
+                "id": generateObjectId(),
+                "dynamicLocale": false
+            });
+        }
+
+        conditions.push(killCondition);
+    });
+
     return conditions;
 }
 
 function generateRewards() {
     const rewards = [];
-    
-    $('.reward-row').each(function() {
+
+    $('.reward-row').each(function () {
         const type = $(this).find('.reward-type-select').val();
         if (!type) return;
 
@@ -331,7 +339,7 @@ function generateRewards() {
             "index": rewards.length,
         };
 
-        switch(type) {
+        switch (type) {
 
             case 'Money':
                 const currencyType = $(this).find('.money-type-select').val();
@@ -355,7 +363,7 @@ function generateRewards() {
                 const itemId = $(this).find('.reward-item select').val();
                 const rewardId = generateObjectId();
                 if (!itemId) break;
-                
+
                 reward.findInRaid = false;
 
                 reward.items = [{
@@ -379,11 +387,11 @@ function generateRewards() {
                 const traderId = $(this).find('.trader-standing-select').val();
                 const standingValue = parseFloat($(this).find('.standing-value').val());
                 if (!traderId || isNaN(standingValue)) break;
-                
+
                 reward.target = traderId;
                 reward.value = standingValue;
                 reward.type = "TraderStanding";
-                
+
                 break;
         }
 
@@ -400,27 +408,38 @@ function generateStartConditions() {
     const conditions = [];
     let index = 0;
 
-    // Condição de nível
-    if ($('#requiredLevel').val()) {
-        conditions.push({
-            "conditionType": "Level",
-            "compareMethod": ">=",
-            "value": parseInt($('#requiredLevel').val()),
-            "id": generateObjectId(),
-            "index": index++
-        });
-    }
+    // Iterate through each kill task to get its start conditions
+    $('.kill-task').each(function() {
+        const $taskElement = $(this);
+        
+        // Level lock condition
+        if ($taskElement.find('[id$="_levelLockCheck"]').is(':checked')) {
+            const level = parseInt($taskElement.find('[id$="_levelLockInput"]').val());
+            if (!isNaN(level)) {
+                conditions.push({
+                    "conditionType": "Level",
+                    "compareMethod": ">=",
+                    "value": level,
+                    "id": generateObjectId(),
+                    "index": index++
+                });
+            }
+        }
 
-    // Condição de quest prévia
-    if ($('#requiredQuest').val()) {
-        conditions.push({
-            "conditionType": "Quest",
-            "status": [4], // 4 = Completed
-            "target": $('#requiredQuest').val(),
-            "id": generateObjectId(),
-            "index": index++
-        });
-    }
+        // Quest lock condition
+        if ($taskElement.find('[id$="_questLockCheck"]').is(':checked')) {
+            const questId = $taskElement.find('[id$="_questLock"]').val();
+            if (questId) {
+                conditions.push({
+                    "conditionType": "Quest",
+                    "status": [4], // 4 = Completed
+                    "target": questId,
+                    "id": generateObjectId(),
+                    "index": index++
+                });
+            }
+        }
+    });
 
     return conditions;
 }
@@ -431,7 +450,7 @@ $('#generateQuestJson').click(() => {
     if (!quest) return;
 
     const locales = generateLocalesJson(quest);
-    
+
     $('#jsonQuestOutput').text(JSON.stringify(quest, null, 2));
     $('#jsonLocalesOutput').text(JSON.stringify(locales, null, 2));
     new bootstrap.Modal('#questJsonModal').show();
@@ -570,13 +589,13 @@ $('#generateJson').click(() => {
     new bootstrap.Modal('#jsonModal').show();
 });
 
-$('#TraderStandingInput1').on('input', function() {
+$('#TraderStandingInput1').on('input', function () {
     let value = $(this).val().replace(/[^0-9.,]/g, '');
-    
+
     value = value.replace(/([.,])(?=.*[.,])/g, '');
-    
+
     value = value.replace(/,/g, '.');
-    
+
     $(this).val(value);
 });
 
@@ -647,7 +666,7 @@ async function fetchQuestData() {
         }
 
         const data = await response.json();
-        return data.data.tasks; 
+        return data.data.tasks;
     } catch (error) {
         console.error('API Error:', error);
         showToast('Failed to fetch quests data from API', 'danger');
@@ -655,9 +674,10 @@ async function fetchQuestData() {
     }
 }
 
+
+// Update loadQuestData to store the quests globally
 async function loadQuestData() {
     try {
-        let quests = [];
         const cachedData = localStorage.getItem('cachedQuests');
 
         if (cachedData) {
@@ -668,7 +688,7 @@ async function loadQuestData() {
         if (!quests.length) {
             showToast('Fetching quests data...', 'info');
             quests = await fetchQuestData();
-            
+
             if (quests.length) {
                 localStorage.setItem('cachedQuests', JSON.stringify(quests));
                 console.log('Saved quests to cache:', quests.length);
@@ -684,7 +704,6 @@ async function loadQuestData() {
     } catch (error) {
         console.error('Quest Load Error:', error);
         showToast('Failed to load quests', 'danger');
-        return [];
     }
 }
 
@@ -701,7 +720,7 @@ async function loadData() {
         if (!items.length) {
             showToast('Fetching latest data...', 'info');
             items = await fetchData(); // Atualiza a variável global
-            
+
             if (items.length) {
                 localStorage.setItem('cachedItems', JSON.stringify(items));
                 console.log('Saved to cache:', items.length, 'items');
@@ -729,6 +748,7 @@ async function loadData() {
 
 let crafts = [];
 let items = [];
+let quests = [];
 
 function resetForm() {
     $('#craftNameInput').val('');
@@ -785,26 +805,26 @@ let rewardIndex = 1;
 
 // Função para adicionar nova recompensa
 function addRewardRow() {
-    if(items.length === 0) {
+    if (items.length === 0) {
         showToast('Items data not loaded yet!', 'warning');
         return;
     }
 
     const original = $('.reward-row:first');
     const newRow = original.clone(true);
-    
+
     // Resetar valores
     newRow.find('select').val('');
     newRow.find('input').val('');
     newRow.find('.remove-reward').removeClass('d-none');
-    
+
     // Gerar novo ID único
     const newIndex = Date.now();
     newRow.attr('data-reward-index', newIndex);
-    
+
     // Atualizar IDs dos elementos
     newRow.find('.reward-item-select').attr('id', `rewardItem${newIndex}`);
-    
+
     // Inicializar Select2 para o novo item
     newRow.find('.reward-item-select').select2({
         theme: 'bootstrap-5',
@@ -815,39 +835,39 @@ function addRewardRow() {
         })),
         width: '100%'
     });
-    
+
     // Inserir antes do botão de adicionar
     newRow.insertBefore('#addReward').hide().slideDown();
-    
+
     // Esconder botão de remover se for o único item
-    if($('.reward-row').length > 1) {
+    if ($('.reward-row').length > 1) {
         newRow.find('.remove-reward').removeClass('d-none');
     }
 }
 
 // Remover recompensa
-$(document).on('click', '.remove-reward', function() {
+$(document).on('click', '.remove-reward', function () {
     $(this).closest('.reward-row').slideUp(() => {
         $(this).remove();
         // Atualizar visibilidade dos botões de remover
         const remaining = $('.reward-row').length;
-        if(remaining === 1) {
+        if (remaining === 1) {
             $('.remove-reward').addClass('d-none');
         }
     });
 });
 
 // Controle de visibilidade
-$(document).on('change', '.reward-type-select', function() {
+$(document).on('change', '.reward-type-select', function () {
     const parent = $(this).closest('.reward-row');
     const type = $(this).val();
-    
+
     // Esconder todos os campos
     parent.find('.reward-item, .reward-experience, .money-type, .money-amount, .trader-select, .standing-input')
-          .addClass('d-none');
-    
+        .addClass('d-none');
+
     // Mostrar campos relevantes
-    switch(type) {
+    switch (type) {
         case 'Item':
             parent.find('.reward-item').removeClass('d-none');
             break;
@@ -873,57 +893,73 @@ $(document).ready(async () => {
 
     $('.quest-container').hide(); // Hide quest container by default
 
-    $('#addQuestTask').click(function() {
+    $('#addQuestTask').click(function () {
         const taskType = $('#taskTypeSelect').val();
-        
+
         if (taskType === 'CounterCreator') {
             const template = document.getElementById('killTaskTemplate');
             const clone = template.content.cloneNode(true);
-            
+
             // Torna os IDs únicos
             const timestamp = Date.now();
-            $(clone).find('select, input').each(function() {
+            $(clone).find('select, input').each(function () {
                 const newId = $(this).attr('id') + '_' + timestamp;
                 $(this).attr('id', newId);
             });
-            
+
             $('.kill-tasks-container').append(clone);
         } else {
             showToast('Select "Counter Creator" first!', 'warning');
         }
     });
-    
+
     // Remover tarefa
-    $(document).on('click', '.remove-kill-task', function() {
+    $(document).on('click', '.remove-kill-task', function () {
         $(this).closest('.kill-task').remove();
     });
 
     // Habilitar/desabilitar inputs baseado nas checkboxes
-    $('#bodyPartCheck').change(function() {
-        $('#bodyPartSelect').prop('disabled', !this.checked);
+    $(document).on('change', '[id^="bodyPartCheck_"]', function () {
+        const $select = $(this).closest('.kill-task').find('[id^="bodyPartSelect_"]');
+        $select.prop('disabled', !this.checked);
     });
 
-    $('#distanceCheck').change(function() {
-        $('#killDistance').prop('disabled', !this.checked);
+    // Distance check handler
+    $(document).on('change', '[id^="distanceCheck_"]', function () {
+        const $input = $(this).closest('.kill-task').find('[id^="killDistance_"]');
+        $input.prop('disabled', !this.checked);
     });
 
-    $('#timeCheck').change(function() {
-        $('#timeRequirementFrom, #timeRequirementTo').prop('disabled', !this.checked);
+    // Time check handler
+    $(document).on('change', '[id^="timeCheck_"]', function () {
+        const $taskContainer = $(this).closest('.kill-task');
+        const $timeInputs = $taskContainer.find('[id^="timeRequirementFrom_"], [id^="timeRequirementTo_"]');
+        $timeInputs.prop('disabled', !this.checked);
     });
 
-    $('#questLockCheck').change(function() {
-        $('#questLock1').prop('disabled', !this.checked);
+    // Level lock check handler 
+    $(document).on('change', '[id^="levelLockCheck_"]', function() {
+        const $input = $(this).closest('.kill-task').find('[id^="levelLockInput_"]');
+        $input.prop('disabled', !this.checked);
     });
 
-    $('#levelLockCheck').change(function() {
-        $('#levelLockInput').prop('disabled', !this.checked);
-    });
-
-    
-    $('#questLock1').select2({
-        theme: 'bootstrap-5',
-        placeholder: 'Select a quest...',
-        width: '100%'
+    // Quest lock check handler
+    $(document).on('change', '[id^="questLockCheck_"]', function () {
+        const $select = $(this).closest('.kill-task').find('[id^="questLock_"]');
+        if (this.checked) {
+            $select.prop('disabled', false).select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Select a quest...',
+                data: quests.map(quest => ({
+                    id: quest.id,
+                    text: quest.name
+                })),
+                width: '100%',
+                allowClear: true
+            });
+        } else {
+            $select.prop('disabled', true).val(null).trigger('change');
+        }
     });
 
 
