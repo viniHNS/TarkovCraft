@@ -213,16 +213,23 @@ function generateLocalesJson(questData) {
         [questId + " completePlayerMessage"]: $("#completePlayerMessage").val()
     };
 
-    if (availableForFinish.length === 1) {
-        locales[availableForFinish[0].id] = $("#killDescription").val();
-    } else if (availableForFinish.length > 1) {
-        availableForFinish.forEach((item, index) => {
-            locales[item.id] = $("#killDescription" + (index + 1)).val();
-        });
-    }
+    // Handle multiple kill descriptions
+    $('.kill-task').each(function(index) {
+        const $taskElement = $(this);
+        const killDescription = $taskElement.find('[id^="killDescription"]').val();
+        
+        // Get the corresponding condition ID from availableForFinish array
+        if (availableForFinish[index]) {
+            locales[availableForFinish[index].id] = killDescription;
+        }
+    });
+
+
 
     return locales;
 }
+
+
 
 // Gerar condições de kill
 function generateKillConditions() {
@@ -400,12 +407,11 @@ function generateStartConditions() {
     let index = 0;
 
     // Iterate through each kill task to get its start conditions
-    $('.kill-task').each(function() {
-        const $taskElement = $(this);
+        const $taskElement = $('.quest-general');
         
         // Level lock condition
-        if ($taskElement.find('[id$="_levelLockCheck"]').is(':checked')) {
-            const level = parseInt($taskElement.find('[id$="_levelLockInput"]').val());
+        if ($taskElement.find('[id="levelLockCheck"]').is(':checked')) {
+            const level = parseInt($taskElement.find('[id="levelLockInput"]').val());
             if (!isNaN(level)) {
                 conditions.push({
                     "conditionType": "Level",
@@ -418,8 +424,8 @@ function generateStartConditions() {
         }
 
         // Quest lock condition
-        if ($taskElement.find('[id$="_questLockCheck"]').is(':checked')) {
-            const questId = $taskElement.find('[id$="_questLock"]').val();
+        if ($taskElement.find('[id="questLockCheck"]').is(':checked')) {
+            const questId = $taskElement.find('[id="questLock"]').val();
             if (questId) {
                 conditions.push({
                     "conditionType": "Quest",
@@ -430,7 +436,7 @@ function generateStartConditions() {
                 });
             }
         }
-    });
+    ;
 
     return conditions;
 }
@@ -929,14 +935,14 @@ $(document).ready(async () => {
     });
 
     // Level lock check handler 
-    $(document).on('change', '[id^="levelLockCheck_"]', function() {
-        const $input = $(this).closest('.kill-task').find('[id^="levelLockInput_"]');
+    $(document).on('change', '[id="levelLockCheck"]', function() {
+        const $input = $(this).closest('.quest-general').find('[id="levelLockInput"]');
         $input.prop('disabled', !this.checked);
     });
 
     // Quest lock check handler
-    $(document).on('change', '[id^="questLockCheck_"]', function () {
-        const $select = $(this).closest('.kill-task').find('[id^="questLock_"]');
+    $(document).on('change', '[id="questLockCheck"]', function () {
+        const $select = $(this).closest('.quest-general').find('[id="questLock"]');
         if (this.checked) {
             $select.prop('disabled', false).select2({
                 theme: 'bootstrap-5',

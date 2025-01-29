@@ -168,24 +168,62 @@
 
                         <div class="row">
                             <div class="col-md-12">
+                                <p>General Task things</p>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3 quest-general">
+                            <div class="col-md-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="questLockCheck">
+                                    <label class="form-check-label" for="questLockCheck">
+                                        Lock behind quest?
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <select class="form-select tool-select" id="questLock" disabled>
+                                    <option></option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="levelLockCheck">
+                                    <label class="form-check-label" for="levelLockCheck">
+                                        Lock behind level?
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <input class="form-control" id="levelLockInput" placeholder="Level" type="number" disabled>
+                            </div>
+                        </div>
+
+                        <hr class="mt-4">
+
+                        <div class="row">
+                            <div class="col-md-12">
                                 <p>Task Type</p>
                             </div>
                         </div>
 
+
                         <div class="row mb-3">
-                            <div class="col-md-4">
+                            <div class="col-md-2">
                                 <select class="form-select ingredient-select" id="taskTypeSelect">
-                                    <option value="">Choose the type of your quest</option>
+                                    <option value="">Quest Type</option>
                                     <option value="HandoverItem">Handover Item</option>
                                     <option value="FindItem">Find Item</option>
                                     <option value="Skill">Skill</option>
                                     <option value="CounterCreator">Counter Creator (Kill)</option>
                                 </select>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-2">
                                 <button class="btn btn-outline-secondary" id="addQuestTask" type="button">Add quest task</button>
                             </div>
+                            
                         </div>
+
                         <hr class="mt-4">
                         <div class="kill-tasks-container">
                             <!-- As tarefas serão adicionadas aqui -->
@@ -307,33 +345,9 @@
                                         <div class="col-md-2">
                                             <input class="form-control" id="timeRequirementTo" placeholder="24h format (To)" type="number" disabled>
                                         </div>
-                                        <div class="col-md-2">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" value="" id="questLockCheck">
-                                                <label class="form-check-label" for="questLockCheck">
-                                                    Lock behind quest?
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <select class="form-select tool-select" id="questLock" disabled>
-                                                <option></option>
-                                            </select>
-                                        </div>
+                                        
                                     </div>
-                                    <div class="row mb-4 pb-4">
-                                        <div class="col-md-2">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" value="" id="levelLockCheck">
-                                                <label class="form-check-label" for="levelLockCheck">
-                                                    Lock behind level?
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <input class="form-control" id="levelLockInput" placeholder="Level" type="number" disabled>
-                                        </div>
-                                    </div>
+                                    
                                 </div>
                             </div>
                         </template>
