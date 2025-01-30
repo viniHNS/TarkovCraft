@@ -618,47 +618,64 @@ function generateRecipeJson() {
 }
 
 function generateBarterJson() {
+    // Get trader ID and validate
+    const traderId = $('#BartertraderSelect').val();
+    if (!traderId) {
+        showToast('Please select a trader!', 'warning');
+        return null;
+    }
+
+    // Get loyalty level and validate
+    const loyaltyLevel = parseInt($('#BartertraderLoyalSelect').val());
+    if (!loyaltyLevel) {
+        showToast('Please select a trader loyalty level!', 'warning');
+        return null;
+    }
+
     const mongoId = generateObjectId();
     const isUnlimited = $('#barterUnlimitedCheckBox').is(':checked');
     const stackCount = isUnlimited ? 999999 : parseInt($('#barterStackObjectsCount').val()) || 1;
 
-    const barter = {
-        items: [
-            {
-                _id: mongoId,
-                _tpl: $('#finalItemInput').val(),
-                parentId: "hideout",
-                slotId: "hideout",
-                upd: {
-                    UnlimitedCount: isUnlimited,
-                    StackObjectsCount: stackCount,
-                    BuyRestrictionMax: parseInt($('#barterBuyRestrictionNumber').val()) || 1,
-                    BuyRestrictionCurrent: 0
+    // Create the base structure with trader ID as root
+    const barterData = {
+        [traderId]: {
+            items: [
+                {
+                    _id: mongoId,
+                    _tpl: $('#finalItemInput').val(),
+                    parentId: "hideout",
+                    slotId: "hideout",
+                    upd: {
+                        UnlimitedCount: isUnlimited,
+                        StackObjectsCount: stackCount,
+                        BuyRestrictionMax: parseInt($('#barterBuyRestrictionNumber').val()) || 1,
+                        BuyRestrictionCurrent: 0
+                    }
                 }
+            ],
+            barter_scheme: {
+                [mongoId]: [[]]
+            },
+            loyal_level_items: {
+                [mongoId]: loyaltyLevel
             }
-        ],
-        barter_scheme: {
-            [mongoId]: [[]]
-        },
-        loyal_level_items: {
-            [mongoId]: parseInt($('#traderLevelInput').val()) || 1
         }
     };
 
-    // Add barter items using respective quantity inputs
+    // Add barter items
     for (let i = 1; i <= 4; i++) {
         const itemId = $(`#itemInput${i}`).val();
         const itemCount = parseInt($(`#itemQuantityInput${i}`).val());
         
         if (itemId && !isNaN(itemCount)) {
-            barter.barter_scheme[mongoId][0].push({
+            barterData[traderId].barter_scheme[mongoId][0].push({
                 count: itemCount,
                 _tpl: itemId
             });
         }
     }
 
-    return barter;
+    return barterData;
 }
 
 $('#generateBarterJson').click(() => {
@@ -667,13 +684,46 @@ $('#generateBarterJson').click(() => {
         return;
     }
     
-    // Remove displayName from barters before generating JSON
-    const cleanBarters = barters.map(({ displayName, ...rest }) => rest);
+    // Group barters by trader
+    const groupedBarters = barters.reduce((acc, barter) => {
+        const traderId = Object.keys(barter)[0];
+        if (!acc[traderId]) {
+            acc[traderId] = {
+                items: [],
+                barter_scheme: {},
+                loyal_level_items: {}
+            };
+        }
+        
+        // Add items
+        acc[traderId].items.push(...barter[traderId].items);
+        
+        // Add barter schemes
+        Object.assign(acc[traderId].barter_scheme, barter[traderId].barter_scheme);
+        
+        // Add loyalty levels
+        Object.assign(acc[traderId].loyal_level_items, barter[traderId].loyal_level_items);
+        
+        return acc;
+    }, {});
+
+    // Create final cleaned JSON
+    const cleanBarters = Object.entries(groupedBarters).reduce((acc, [traderId, data]) => {
+        acc[traderId] = {
+            items: data.items,
+            barter_scheme: data.barter_scheme,
+            loyal_level_items: data.loyal_level_items
+        };
+        return acc;
+    }, {});
+
     $('#barterJsonOutput').text(JSON.stringify(cleanBarters, null, 2));
     new bootstrap.Modal('#barterJsonModal').show();
 });
 
-$('#button-addon').click(addBarter);
+$('#button-addon').click(() => {
+    addBarter();
+});
 
 $('#copyBarterJson').click(() => {
     if (barters.length === 0) {
@@ -920,12 +970,16 @@ function updateBartersList() {
     list.empty();
 
     barters.forEach((barter, index) => {
-        const itemId = barter.items[0]._tpl;
-        const itemName = items.find(item => item.id === itemId)?.name || itemId;
+        // Get trader ID (first key of the object)
+        const traderId = Object.keys(barter)[0];
+        // Get the first item from the items array
+        const item = barter[traderId].items[0];
+        const itemId = item._tpl;
+        const itemName = items.find(i => i.id === itemId)?.name || itemId;
         
         list.append(`
             <div class="list-group-item d-flex justify-content-between align-items-center rounded-2 my-1">
-                <span>${barter.displayName}</span>
+                <span>${barter.displayName || `Barter ${index + 1}`}</span>
                 <small>${itemName}</small>
             </div>
         `);
