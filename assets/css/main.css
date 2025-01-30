@@ -80,5 +80,43 @@ body {
     font-size: 0.8rem;
 }
 
+.remove-reward {
+    display: none;
+}
+
+.reward-row:not(:first-child) .remove-reward {
+    display: inline-block;
+}
+
+.reward-row:first-child .remove-reward {
+    display: none !important;
+}
+
+/* Select2 personalizado para novos itens */
+.select2-container--bootstrap-5 {
+    width: 100% !important;
+}
+
+/* Garanta que os JSONs tenham scroll */
+#jsonQuestOutput, #jsonLocalesOutput {
+    max-height: 70vh;
+    overflow-y: auto;
+    background: #1a1a1a;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.modal-xl {
+    max-width: 90%;
+}
+
+.kill-task {
+    background: rgba(255, 255, 255, 0.05);
+    position: relative;
+}
+.remove-kill-task {
+    padding: 0 5px;
+    line-height: 1;
+}
 
 

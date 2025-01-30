@@ -10,7 +10,6 @@ function copyDiscordUsername() {
         tooltip.setContent({ '.tooltip-inner': 'Copied to clipboard!' });
         setTimeout(() => tooltip.hide(), 1000);
     }
-    return killCondition;
 }
 
 // Define all Select2 selectors
@@ -19,6 +18,7 @@ const select2Selectors = [
     '#ingredientInput3', '#ingredientInput4',
     '#toolInput1', '#toolInput2', '#toolInput3',
     '#finalProductInput', '#HideoutAreaInput'
+
 ];
 
 // Function to generate MongoDB-style ObjectId
@@ -37,6 +37,19 @@ function handleMongoId() {
 
     // Show feedback
     showToast(`MongoDB ObjectId copied to clipboard!`, 'success');
+}
+
+function initializeQuestSelect2(quests) {
+    $('#questLock1').select2({
+        theme: 'bootstrap-5',
+        placeholder: 'Select a quest...',
+        data: quests.map(quest => ({
+            id: quest.id,
+            text: quest.name
+        })),
+        width: '100%',
+        allowClear: true
+    });
 }
 
 // Initialize all Select2 dropdowns
@@ -63,6 +76,8 @@ function initializeAllSelect2(items) {
         ...itemSelectConfig,
         placeholder: 'Select final product...'
     });
+
+
 
     /*
         |-----------------------------------------------------|
@@ -117,114 +132,388 @@ function initializeAllSelect2(items) {
 
 function hideRecipeCreator() {
     $('.recipe-container').hide();
+    $('.barter-container').hide();
     $('.quest-container').show();
 }
 
 function hideQuestCreator() {
     $('.quest-container').hide();
+    $('.barter-container').hide();
     $('.recipe-container').show();
 }
 
-function generateKillCondition(HasEspecificBotTarget, target, EspecificBotTarget, amountOfTargets, hasDistanceRequirement, distance,
-    HasEspecificBodyPart, bodyPart, hasEspecificWeapon, weapon, hasBlackListWeaponMods, blackListWeaponMods, hasEspecificWeaponMods, weaponMods) {
+function hideBarterCreator() {
+    $('.recipe-container').hide();
+    $('.quest-container').hide();
+    $('.barter-container').show();
+}
 
-    const id = generateObjectId();
-    const condition_id = generateObjectId();
+function generateQuestJson() {
+    const questId = generateObjectId();
 
-    if (HasEspecificBotTarget) {
-        target = "Savage";
-        EspecificBotTarget = $('#botTargetInput').val();
-    } else {
-        target = $('#botTargetInput').val();
-        EspecificBotTarget = "";
+    let questType = $('#taskTypeSelect').val();
+    if (questType === 'CounterCreator') {
+        questType = 'Elimination';
     }
 
-    if (hasDistanceRequirement) {
-        distance = $('#distanceInput').val();
-    } else {
-        distance = 0;
-    }
-
-    if (HasEspecificBodyPart) {
-        bodyPart = $('#bodyPartInput').val();
-    } else {
-        bodyPart = "";
-    }
-
-    if (hasEspecificWeapon) {
-        weapon = $('#weaponInput').val();
-    } else {
-        weapon = "";
-    }
-
-    if (hasBlackListWeaponMods) {
-        blackListWeaponMods = $('#blackListWeaponModsInput').val();
-    } else {
-        blackListWeaponMods = "";
-    }
-
-    if (hasEspecificWeaponMods) {
-        weaponMods = $('#weaponModsInput').val();
-    } else {
-        weaponMods = "";
-    }
-
-    const killCondition = {
-        "completeInSeconds": 0,
-        "conditionType": "CounterCreator",
-        "counter": {
-            "conditions": [
-                {
-                    "bodyPart": [`${bodyPart}`],
-                    "compareMethod": ">=",
-                    "conditionType": "Kills",
-                    "daytime": {
-                        "from": 0,
-                        "to": 0
-                    },
-                    "distance": {
-                        "compareMethod": ">=",
-                        "value": `${distance}`
-                    },
-                    "dynamicLocale": false,
-                    "enemyEquipmentExclusive": [],
-                    "enemyEquipmentInclusive": [],
-                    "enemyHealthEffects": [],
-                    "id": `${condition_id}`,
-                    "resetOnSessionEnd": false,
-                    "savageRole": [`${EspecificBotTarget}`],
-                    "target": `${target}`,
-                    "value": `${amountOfTargets}`,
-                    "weapon": [`${weapon}`],
-                    "weaponCaliber": [],
-                    "weaponModsExclusive": [`${blackListWeaponMods}`],
-                    "weaponModsInclusive": [`${weaponMods}`]
-                }
-            ],
-            "id": `${id}`,
+    return {
+        [questId]: { // Dynamic key based on generated ID
+            "QuestName": $("#questName").val(),
+            "_id": questId,
+            "acceptPlayerMessage": questId + " acceptPlayerMessage", // Will be replaced in locales
+            "acceptanceAndFinishingSource": "eft",
+            "arenaLocations": [],
+            "canShowNotificationsInGame": true,
+            "changeQuestMessageText": questId + " changeQuestMessageText", // Will be replaced in locales
+            "completePlayerMessage": questId + " completePlayerMessage", // Will be replaced in locales
+            "conditions": generateConditions(),
+            "declinePlayerMessage": questId + " declinePlayerMessage", // Will be replaced in locales
+            "description": questId + " description", // Will be replaced in locales
+            "failMessageText": questId + " failMessageText", // Will be replaced in locales
+            "gameModes": [],
+            "image": "/files/quest/icon/default.jpg",
+            "instantComplete": false,
+            "isKey": false,
+            "location": $('#locationSelect').val(),
+            "name": questId + " name", // Will be replaced in locales
+            "note": questId + " note", // Will be replaced in locales
+            "progressSource": "eft",
+            "rankingModes": [],
+            "restartable": false,
+            "rewards": {
+                "Fail": [],
+                "Started": [],
+                "Success": generateRewards(),
+            },
+            "secretQuest": false,
+            "side": "Pmc",
+            "location": determineQuestLocation(),
+            "startedMessageText": questId + " startedMessageText", // Will be replaced in locales
+            "status": 0,
+            "successMessageText": questId + " successMessageText", // Will be replaced in locales
+            "traderId": $("#traderSelect").val(),
+            "type": questType
         }
-    }
+    };
 }
 
-function generateBaseQuest() {
+function determineQuestLocation() {
+    const locationMap = {
+        "55f2d3fd4bdc2d5f408b4567": "Factory Day",
+        "59fc81d786f774390775787e": "Factory Night",
+        "56f40101d2720b2a4d8b45d6": "Customs",
+        "5704e3c2d2720bac5b8b4567": "Woods", 
+        "5704e4dad2720bb55b8b4567": "Lighthouse",
+        "5704e554d2720bac5b8b456e": "Shoreline",
+        "5704e5fad2720bc05b8b4567": "Reserve",
+        "5714dbc024597771384a510d": "Interchange",
+        "5b0fc42d86f7744a585f9105": "The Lab",
+        "5714dc692459777137212e12": "Streets",
+        "653e6760052c01c1c805532f": "Ground Zero"
+    };
 
-    const quest_id = generateObjectId();
+    const conditions = generateConditions()?.AvailableForFinish || [];
+    
+    // Find all Location conditions
+    const locationConditions = conditions.flatMap(condition => 
+        condition.counter?.conditions?.filter(c => c.conditionType === "Location") || []
+    );
 
-    const quest = {
-        "QuestName": $('#questNameInput').val(),
-        "_id": quest_id,
-        "acceptanceAndFinishingSource": "eft",
-        "arenaLocations": [],
-        "canShowNotificationsInGame": true,
-        "acceptPlayerMessage": `${quest_id} acceptPlayerMessage`,
-        "changeQuestMessageText": `${quest_id} changeQuestMessageText`,
-        "completePlayerMessage": `${quest_id} completePlayerMessage`,
-        "conditions": {
-
-        },
-
+    // If no location conditions found, return "any"
+    if (locationConditions.length === 0) {
+        return "any";
     }
+
+    // Check if any condition has "any" as target
+    const hasAnyLocation = locationConditions.some(c => 
+        c.target.includes("any") || c.target[0] === ""
+    );
+
+    // If "any" is present or multiple different locations, return "any"
+    const uniqueLocations = new Set(locationConditions.flatMap(c => c.target));
+    if (hasAnyLocation || uniqueLocations.size > 1) {
+        return "any";
+    }
+
+    // If we get here, there is exactly one unique location
+    const locationId = locationConditions[0].target[0];
+    return locationMap[locationId] || "any";
 }
+
+function generateConditions() {
+
+    console.log(generateKillConditions());
+    console.log(generateStartConditions());
+
+    return {
+        "AvailableForFinish": generateKillConditions(), // Condições para finalizar
+        "AvailableForStart": generateStartConditions(), // Pré-requisitos
+        "Fail": [] // Sem condições de falha
+    };
+}
+
+// Generate locales based on quest ID
+function generateLocalesJson(questData) {
+    const questId = Object.keys(questData)[0];
+    const availableForFinish = questData[questId].conditions.AvailableForFinish;
+    const locales = {
+        [questId + " name"]: $("#questName").val(),
+        [questId + " description"]: $("#descriptionMessageText").val(),
+        [questId + " successMessageText"]: $("#successMessageText").val(),
+        [questId + " acceptPlayerMessage"]: $("#acceptPlayerMessage").val(),
+        [questId + " declinePlayerMessage"]: $("#declinePlayerMessage").val(),
+        [questId + " completePlayerMessage"]: $("#completePlayerMessage").val()
+    };
+
+    // Handle multiple kill descriptions
+    $('.kill-task').each(function(index) {
+        const $taskElement = $(this);
+        const killDescription = $taskElement.find('[id^="killDescription"]').val();
+        
+        // Get the corresponding condition ID from availableForFinish array
+        if (availableForFinish[index]) {
+            locales[availableForFinish[index].id] = killDescription;
+        }
+    });
+
+
+
+    return locales;
+}
+
+// Gerar condições de kill
+function generateKillConditions() {
+    const conditions = [];
+    
+    $('.kill-task').each(function() {
+        const $taskElement = $(this);
+        const killAmount = $taskElement.find('[id^="killAmount_"]').val();
+
+        if (!killAmount) return;
+
+        const killCondition = {
+            "completeInSeconds": 0,
+            "conditionType": "CounterCreator",
+            "counter": {
+                "conditions": [],
+                "id": generateObjectId()
+            },
+            "dynamicLocale": false,
+            "id": generateObjectId(),
+            "type": "Elimination",
+            "value": parseInt(killAmount)
+        };
+
+        const specificTarget = $taskElement.find('[id^="specificTarget_"]').val();
+        const nonBossTargets = new Set(['Any', 'Savage', 'AnyPmc', 'Usec', 'Bear', 'pmcBot']);
+        let target, savageRole = [];
+
+        if (specificTarget && !nonBossTargets.has(specificTarget)) {
+            target = 'Savage';
+            savageRole.push(specificTarget);
+        } else {
+            target = specificTarget || 'Any';
+        }
+
+        const baseKill = {
+            "conditionType": "Kills",
+            "target": target,
+            "savageRole": savageRole,
+            "id": generateObjectId(),
+            "compareMethod": ">=",
+            "daytime": { "from": 0, "to": 0 },
+            "distance": { "compareMethod": ">=", "value": 0 },
+            "dynamicLocale": false,
+            "enemyEquipmentExclusive": [],
+            "enemyEquipmentInclusive": [],
+            "enemyHealthEffects": [],
+            "resetOnSessionEnd": false,
+            "weapon": [],
+            "weaponCaliber": [],
+            "weaponModsExclusive": [],
+            "weaponModsInclusive": []
+        };
+
+        if ($taskElement.find('[id^="bodyPartCheck_"]').is(':checked')) {
+            baseKill.bodyPart = $taskElement.find('[id^="bodyPartSelect_"]').val();
+        }
+
+        if ($taskElement.find('[id^="distanceCheck_"]').is(':checked')) {
+            const distance = parseInt($taskElement.find('[id^="killDistance_"]').val());
+            if (!isNaN(distance)) {
+                baseKill.distance.value = distance;
+            }
+        }
+
+        if ($taskElement.find('[id^="timeCheck_"]').is(':checked')) {
+            const from = parseInt($taskElement.find('[id^="timeRequirementFrom_"]').val());
+            const to = parseInt($taskElement.find('[id^="timeRequirementTo_"]').val());
+            if (!isNaN(from) && !isNaN(to)) {
+                baseKill.daytime = { from, to };
+            }
+        }
+
+        killCondition.counter.conditions.push(baseKill);
+
+        const location = $taskElement.find('[id^="locationSelect_"]').val();
+        if (location && location !== 'any') {
+            killCondition.counter.conditions.push({
+                "conditionType": "Location",
+                "target": [location],
+                "id": generateObjectId(),
+                "dynamicLocale": false
+            });
+        }
+
+        conditions.push(killCondition);
+    });
+
+    return conditions;
+}
+
+function generateRewards() {
+    const rewards = [];
+
+    $('.reward-row').each(function () {
+        const type = $(this).find('.reward-type-select').val();
+        if (!type) return;
+
+
+        const reward = {
+            "availableInGameEditions": [],
+            "_id": generateObjectId(),
+            "type": type,
+            "unknown": false,
+            "index": rewards.length,
+        };
+
+        switch (type) {
+
+            case 'Money':
+                const currencyType = $(this).find('.money-type-select').val();
+                const moneyAmount = parseInt($(this).find('.money-input').val());
+                if (!currencyType || !moneyAmount) break;
+
+                let moneyRewardId = generateObjectId();
+
+                reward.items = [{
+                    "_id": moneyRewardId,
+                    "_tpl": currencyType,
+                    "upd": { "StackObjectsCount": moneyAmount }
+                }];
+                reward.target = moneyRewardId;
+                reward.type = "Item";
+                reward.value = moneyAmount;
+                reward.findInRaid = false;
+                break;
+
+            case 'Item':
+                const itemId = $(this).find('.reward-item select').val();
+                const rewardId = generateObjectId();
+                if (!itemId) break;
+
+                reward.findInRaid = false;
+
+                reward.items = [{
+                    "_id": rewardId,
+                    "_tpl": itemId,
+                    "upd": { "StackObjectsCount": 1 }
+                }];
+                reward.value = 1;
+                reward.target = rewardId
+                reward.type = "Item";
+                break;
+
+            case 'Experience':
+                const expValue = parseInt($(this).find('.experience-input').val());
+                if (!expValue) break;
+                reward.type = "Experience";
+                reward.value = expValue;
+                break;
+
+            case 'TraderStanding':
+                const traderId = $(this).find('.trader-standing-select').val();
+                const standingValue = parseFloat($(this).find('.standing-value').val());
+                if (!traderId || isNaN(standingValue)) break;
+
+                reward.target = traderId;
+                reward.value = standingValue;
+                reward.type = "TraderStanding";
+
+                break;
+        }
+
+        if (Object.keys(reward).length > 4) { // Basic validation
+            rewards.push(reward);
+        }
+    });
+
+    return rewards;
+}
+
+// Gerar pré-requisitos
+function generateStartConditions() {
+    const conditions = [];
+    let index = 0;
+
+    // Iterate through each kill task to get its start conditions
+        const $taskElement = $('.quest-general');
+        
+        // Level lock condition
+        if ($taskElement.find('[id="levelLockCheck"]').is(':checked')) {
+            const level = parseInt($taskElement.find('[id="levelLockInput"]').val());
+            if (!isNaN(level)) {
+                conditions.push({
+                    "conditionType": "Level",
+                    "compareMethod": ">=",
+                    "value": level,
+                    "id": generateObjectId(),
+                    "index": index++
+                });
+            }
+        }
+
+        // Quest lock condition
+        if ($taskElement.find('[id="questLockCheck"]').is(':checked')) {
+            const questId = $taskElement.find('[id="questLock"]').val();
+            if (questId) {
+                conditions.push({
+                    "conditionType": "Quest",
+                    "status": [4], // 4 = Completed
+                    "target": questId,
+                    "id": generateObjectId(),
+                    "index": index++
+                });
+            }
+        }
+    ;
+
+    return conditions;
+}
+
+// Event Listeners
+$('#generateQuestJson').click(() => {
+    const quest = generateQuestJson();
+    if (!quest) return;
+
+    const locales = generateLocalesJson(quest);
+
+    $('#jsonQuestOutput').text(JSON.stringify(quest, null, 2));
+    $('#jsonLocalesOutput').text(JSON.stringify(locales, null, 2));
+    new bootstrap.Modal('#questJsonModal').show();
+});
+
+// Funções de cópia
+$('#copyQuestJson').click(() => {
+    navigator.clipboard.writeText($('#jsonQuestOutput').text());
+    showToast('Quest JSON copied!', 'success');
+});
+
+$('#copyLocalesJson').click(() => {
+    navigator.clipboard.writeText($('#jsonLocalesOutput').text());
+    showToast('Locales JSON copied!', 'success');
+});
+
 
 // Main recipe generation function
 function generateRecipeJson() {
@@ -326,8 +615,136 @@ function generateRecipeJson() {
     }
 
     return recipe;
-
 }
+
+function generateBarterJson() {
+    // Get trader ID and validate
+    const traderId = $('#BartertraderSelect').val();
+    if (!traderId) {
+        showToast('Please select a trader!', 'warning');
+        return null;
+    }
+
+    // Get loyalty level and validate
+    const loyaltyLevel = parseInt($('#BartertraderLoyalSelect').val());
+    if (!loyaltyLevel) {
+        showToast('Please select a trader loyalty level!', 'warning');
+        return null;
+    }
+
+    // Validate item quantities for selected items
+    for (let i = 1; i <= 4; i++) {
+        const itemId = $(`#itemInput${i}`).val();
+        const quantity = $(`#itemQuantityInput${i}`).val();
+        
+        if (itemId && !quantity) {
+            showToast(`Please enter quantity for item ${i}!`, 'warning');
+            return null;
+        }
+    }
+
+    const mongoId = generateObjectId();
+    const isUnlimited = $('#barterUnlimitedCheckBox').is(':checked');
+    const stackCount = isUnlimited ? 999999 : parseInt($('#barterStackObjectsCount').val()) || 1;
+
+    // Create the base structure with trader ID as root
+    const barterData = {
+        [traderId]: {
+            items: [
+                {
+                    _id: mongoId,
+                    _tpl: $('#finalItemInput').val(),
+                    parentId: "hideout",
+                    slotId: "hideout",
+                    upd: {
+                        UnlimitedCount: isUnlimited,
+                        StackObjectsCount: stackCount,
+                        BuyRestrictionMax: parseInt($('#barterBuyRestrictionNumber').val()) || 1,
+                        BuyRestrictionCurrent: 0
+                    }
+                }
+            ],
+            barter_scheme: {
+                [mongoId]: [[]]
+            },
+            loyal_level_items: {
+                [mongoId]: loyaltyLevel
+            }
+        }
+    };
+
+    // Add barter items
+    for (let i = 1; i <= 4; i++) {
+        const itemId = $(`#itemInput${i}`).val();
+        const itemCount = parseInt($(`#itemQuantityInput${i}`).val());
+        
+        if (itemId && !isNaN(itemCount)) {
+            barterData[traderId].barter_scheme[mongoId][0].push({
+                count: itemCount,
+                _tpl: itemId
+            });
+        }
+    }
+
+    return barterData;
+}
+
+$('#generateBarterJson').click(() => {
+    if (barters.length === 0) {
+        showToast('No barters to generate!', 'warning');
+        return;
+    }
+    
+    // Group barters by trader
+    const groupedBarters = barters.reduce((acc, barter) => {
+        const traderId = Object.keys(barter)[0];
+        if (!acc[traderId]) {
+            acc[traderId] = {
+                items: [],
+                barter_scheme: {},
+                loyal_level_items: {}
+            };
+        }
+        
+        // Add items
+        acc[traderId].items.push(...barter[traderId].items);
+        
+        // Add barter schemes
+        Object.assign(acc[traderId].barter_scheme, barter[traderId].barter_scheme);
+        
+        // Add loyalty levels
+        Object.assign(acc[traderId].loyal_level_items, barter[traderId].loyal_level_items);
+        
+        return acc;
+    }, {});
+
+    // Create final cleaned JSON
+    const cleanBarters = Object.entries(groupedBarters).reduce((acc, [traderId, data]) => {
+        acc[traderId] = {
+            items: data.items,
+            barter_scheme: data.barter_scheme,
+            loyal_level_items: data.loyal_level_items
+        };
+        return acc;
+    }, {});
+
+    $('#barterJsonOutput').text(JSON.stringify(cleanBarters, null, 2));
+    new bootstrap.Modal('#barterJsonModal').show();
+});
+
+$('#button-addon').click(() => {
+    addBarter();
+});
+
+$('#copyBarterJson').click(() => {
+    if (barters.length === 0) {
+        showToast('No barters to copy!', 'warning');
+        return;
+    }
+    
+    navigator.clipboard.writeText($('#barterJsonOutput').text());
+    showToast('All barters copied!', 'success');
+});
 
 $('.wip').click(() => {
     showToast('This feature is not yet implemented', 'warning');
@@ -345,6 +762,16 @@ $('#generateJson').click(() => {
     const jsonString = JSON.stringify(cleanCrafts, null, 2);
     $('#jsonOutput').text(jsonString);
     new bootstrap.Modal('#jsonModal').show();
+});
+
+$('#TraderStandingInput1').on('input', function () {
+    let value = $(this).val().replace(/[^0-9.,]/g, '');
+
+    value = value.replace(/([.,])(?=.*[.,])/g, '');
+
+    value = value.replace(/,/g, '.');
+
+    $(this).val(value);
 });
 
 $('#copyJson').click(() => {
@@ -393,44 +820,182 @@ async function fetchData() {
     }
 }
 
+async function fetchQuestData() {
+    const query = `{
+        tasks(lang: en) {
+            id
+            name
+        }
+    }`;
+
+    try {
+        const response = await fetch('https://api.tarkov.dev/graphql', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data.data.tasks;
+    } catch (error) {
+        console.error('API Error:', error);
+        showToast('Failed to fetch quests data from API', 'danger');
+        return [];
+    }
+}
+
+// Update loadQuestData to store the quests globally
+async function loadQuestData() {
+    try {
+        const cachedData = localStorage.getItem('cachedQuests');
+
+        if (cachedData) {
+            quests = JSON.parse(cachedData);
+            console.log('Loaded quests from cache:', quests.length);
+        }
+
+        if (!quests.length) {
+            showToast('Fetching quests data...', 'info');
+            quests = await fetchQuestData();
+
+            if (quests.length) {
+                localStorage.setItem('cachedQuests', JSON.stringify(quests));
+                console.log('Saved quests to cache:', quests.length);
+            }
+        }
+
+        if (quests.length) {
+            initializeQuestSelect2(quests);
+        } else {
+            showToast('No quests available', 'warning');
+        }
+
+    } catch (error) {
+        console.error('Quest Load Error:', error);
+        showToast('Failed to load quests', 'danger');
+    }
+}
+
 async function loadData() {
     try {
-        let items = [];
         const cachedData = localStorage.getItem('cachedItems');
 
-        // Try to load from cache first
         if (cachedData) {
             items = JSON.parse(cachedData);
             console.log('Loaded from cache:', items.length, 'items');
+            initializeAllSelect2(items);
+            initializeBarterSelects(items); // Add this line
         }
 
-        // If no cached data, fetch from API
         if (!items.length) {
-            showToast('Fetching latest data... This may take a while', 'info');
+            showToast('Fetching latest data...', 'info');
             items = await fetchData();
 
             if (items.length) {
                 localStorage.setItem('cachedItems', JSON.stringify(items));
                 console.log('Saved to cache:', items.length, 'items');
+                initializeAllSelect2(items);
+                initializeBarterSelects(items); // Add this line
             }
         }
-
-        // Initialize Select2
-        if (items.length) {
-            initializeAllSelect2(items);
-        } else {
-            showToast('No items available. Using fallback data.', 'warning');
-            initializeWithFallbackData();
-        }
-
     } catch (error) {
         console.error('Load Error:', error);
-        showToast('Failed to load data. Using fallback.', 'danger');
-        initializeWithFallbackData();
+        showToast('Failed to load data!', 'danger');
     }
 }
 
+function initializeBarterSelects(items) {
+    const selectConfig = {
+        theme: 'bootstrap-5',
+        placeholder: 'Search item...',
+        data: items.map(item => ({
+            id: item.id,
+            text: `${item.name} (${item.id})`
+        })),
+        width: '100%',
+        allowClear: true
+    };
+
+    // Initialize all item inputs (itemInput1 through itemInput4)
+    for (let i = 1; i <= 4; i++) {
+        $(`#itemInput${i}`).select2(selectConfig);
+    }
+
+    // Initialize final item input with same config but different placeholder
+    $('#finalItemInput').select2({
+        ...selectConfig,
+        placeholder: 'Select final item...'
+    });
+}
+
+let currentBarterName = '';
 let crafts = [];
+let items = [];
+let quests = [];
+let barters = [];
+
+function addBarter() {
+    const barterJson = generateBarterJson();
+    if (!barterJson) {
+        showToast('Failed to generate barter!', 'warning');
+        return;
+    }
+
+    // Get the barter name from input
+    const barterName = $('#barterNameInput').val().trim() || `Barter ${barters.length + 1}`;
+    
+    // Add display name to barter object (won't be included in final JSON)
+    barterJson.displayName = barterName;
+
+    barters.push(barterJson);
+    updateBartersList();
+    resetBarterForm();
+    showToast('Barter added successfully!', 'success');
+}
+
+function resetBarterForm() {
+    // Reset barter name
+    $('#barterNameInput').val('');
+    
+    // Reset all other inputs
+    $('#traderSelect').val(null).trigger('change');
+    $('#traderLevelInput').val('');
+    $('#barterBuyRestrictionNumber').val('');
+    $('#barterStackObjectsCount').val('');
+    $('#barterUnlimitedCheckBox').prop('checked', false);
+    $('#finalItemInput').val(null).trigger('change');
+    
+    // Reset all item selects
+    for (let i = 1; i <= 4; i++) {
+        $(`#itemInput${i}`).val(null).trigger('change');
+        $(`#itemQuantityInput${i}`).val('');
+    }
+}
+
+function updateBartersList() {
+    const list = $('#bartersList .list-group');
+    list.empty();
+
+    barters.forEach((barter, index) => {
+        // Get trader ID (first key of the object)
+        const traderId = Object.keys(barter)[0];
+        // Get the first item from the items array
+        const item = barter[traderId].items[0];
+        const itemId = item._tpl;
+        const itemName = items.find(i => i.id === itemId)?.name || itemId;
+        
+        list.append(`
+            <div class="list-group-item d-flex justify-content-between align-items-center rounded-2 my-1">
+                <span>${barter.displayName || `Barter ${index + 1}`}</span>
+                <small>${itemName}</small>
+            </div>
+        `);
+    });
+}
 
 function resetForm() {
     $('#craftNameInput').val('');
@@ -483,14 +1048,200 @@ function initializeWithFallbackData() {
     localStorage.setItem('cachedItems', JSON.stringify(fallbackItems));
 }
 
+let rewardIndex = 1;
+
+// Função para adicionar nova recompensa
+function addRewardRow() {
+    if (items.length === 0) {
+        showToast('Items data not loaded yet!', 'warning');
+        return;
+    }
+
+    const original = $('.reward-row:first');
+    const newRow = original.clone(true);
+
+    // Resetar valores
+    newRow.find('select').val('');
+    newRow.find('input').val('');
+    newRow.find('.remove-reward').removeClass('d-none');
+
+    // Gerar novo ID único
+    const newIndex = Date.now();
+    newRow.attr('data-reward-index', newIndex);
+
+    // Atualizar IDs dos elementos
+    newRow.find('.reward-item-select').attr('id', `rewardItem${newIndex}`);
+
+    // Inicializar Select2 para o novo item
+    newRow.find('.reward-item-select').select2({
+        theme: 'bootstrap-5',
+        placeholder: 'Select item...',
+        data: items.map(item => ({
+            id: item.id,
+            text: `${item.name} (${item.id})`
+        })),
+        width: '100%'
+    });
+
+    // Inserir antes do botão de adicionar
+    newRow.insertBefore('#addReward').hide().slideDown();
+
+    // Esconder botão de remover se for o único item
+    if ($('.reward-row').length > 1) {
+        newRow.find('.remove-reward').removeClass('d-none');
+    }
+}
+
+// Remover recompensa
+$(document).on('click', '.remove-reward', function () {
+    $(this).closest('.reward-row').slideUp(() => {
+        $(this).remove();
+        // Atualizar visibilidade dos botões de remover
+        const remaining = $('.reward-row').length;
+        if (remaining === 1) {
+            $('.remove-reward').addClass('d-none');
+        }
+    });
+});
+
+// Controle de visibilidade
+$(document).on('change', '.reward-type-select', function () {
+    const parent = $(this).closest('.reward-row');
+    const type = $(this).val();
+
+    // Esconder todos os campos
+    parent.find('.reward-item, .reward-experience, .money-type, .money-amount, .trader-select, .standing-input')
+        .addClass('d-none');
+
+    // Mostrar campos relevantes
+    switch (type) {
+        case 'Item':
+            parent.find('.reward-item').removeClass('d-none');
+            break;
+        case 'Experience':
+            parent.find('.reward-experience').removeClass('d-none');
+            break;
+        case 'Money':
+            parent.find('.money-type, .money-amount').removeClass('d-none');
+            break;
+        case 'TraderStanding':
+            parent.find('.trader-select, .standing-input').removeClass('d-none');
+            break;
+    }
+});
+
+// Vincular evento de adição
+$('#addReward').click(addRewardRow);
+
 // Initial setup
 $(document).ready(async () => {
     // Initialize tooltips
     $('[data-bs-toggle="tooltip"]').tooltip();
 
     $('.quest-container').hide(); // Hide quest container by default
+    $('.barter-container').hide(); // Hide barter container by default
 
-    // Load data
+    
+    // Add validation for quantity inputs
+    for (let i = 1; i <= 4; i++) {
+        // Validate when item is selected
+        $(`#itemInput${i}`).on('change', function() {
+            const itemNumber = i;
+            const quantityInput = $(`#itemQuantityInput${itemNumber}`);
+            
+            if ($(this).val() && !quantityInput.val()) {
+                quantityInput.addClass('is-invalid');
+                showToast(`Please enter quantity for item ${itemNumber}!`, 'warning');
+            } else {
+                quantityInput.removeClass('is-invalid');
+            }
+        });
+
+        // Validate when quantity changes
+        $(`#itemQuantityInput${i}`).on('input', function() {
+            const input = $(this);
+            if (input.val()) {
+                input.removeClass('is-invalid');
+            } else {
+                const itemInput = $(`#itemInput${i}`);
+                if (itemInput.val()) {
+                    input.addClass('is-invalid');
+                }
+            }
+        });
+    }
+
+    $('#addQuestTask').click(function () {
+        const taskType = $('#taskTypeSelect').val();
+
+        if (taskType === 'CounterCreator') {
+            const template = document.getElementById('killTaskTemplate');
+            const clone = template.content.cloneNode(true);
+
+            // Torna os IDs únicos
+            const timestamp = Date.now();
+            $(clone).find('select, input').each(function () {
+                const newId = $(this).attr('id') + '_' + timestamp;
+                $(this).attr('id', newId);
+            });
+
+            $('.kill-tasks-container').append(clone);
+        } else {
+            showToast('Select "Counter Creator" first!', 'warning');
+        }
+    });
+
+    // Remover tarefa
+    $(document).on('click', '.remove-kill-task', function () {
+        $(this).closest('.kill-task').remove();
+    });
+
+    // Habilitar/desabilitar inputs baseado nas checkboxes
+    $(document).on('change', '[id^="bodyPartCheck_"]', function () {
+        const $select = $(this).closest('.kill-task').find('[id^="bodyPartSelect_"]');
+        $select.prop('disabled', !this.checked);
+    });
+
+    // Distance check handler
+    $(document).on('change', '[id^="distanceCheck_"]', function () {
+        const $input = $(this).closest('.kill-task').find('[id^="killDistance_"]');
+        $input.prop('disabled', !this.checked);
+    });
+
+    // Time check handler
+    $(document).on('change', '[id^="timeCheck_"]', function () {
+        const $taskContainer = $(this).closest('.kill-task');
+        const $timeInputs = $taskContainer.find('[id^="timeRequirementFrom_"], [id^="timeRequirementTo_"]');
+        $timeInputs.prop('disabled', !this.checked);
+    });
+
+    // Level lock check handler 
+    $(document).on('change', '[id="levelLockCheck"]', function() {
+        const $input = $(this).closest('.quest-general').find('[id="levelLockInput"]');
+        $input.prop('disabled', !this.checked);
+    });
+
+    // Quest lock check handler
+    $(document).on('change', '[id="questLockCheck"]', function () {
+        const $select = $(this).closest('.quest-general').find('[id="questLock"]');
+        if (this.checked) {
+            $select.prop('disabled', false).select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Select a quest...',
+                data: quests.map(quest => ({
+                    id: quest.id,
+                    text: quest.name
+                })),
+                width: '100%',
+                allowClear: true
+            });
+        } else {
+            $select.prop('disabled', true).val(null).trigger('change');
+        }
+    });
+
+
+    await loadQuestData();
     await loadData();
 
 });
