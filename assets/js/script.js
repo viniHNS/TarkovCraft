@@ -132,12 +132,20 @@ function initializeAllSelect2(items) {
 
 function hideRecipeCreator() {
     $('.recipe-container').hide();
+    $('.barter-container').hide();
     $('.quest-container').show();
 }
 
 function hideQuestCreator() {
     $('.quest-container').hide();
+    $('.barter-container').hide();
     $('.recipe-container').show();
+}
+
+function hideBarterCreator() {
+    $('.recipe-container').hide();
+    $('.quest-container').hide();
+    $('.barter-container').show();
 }
 
 function generateQuestJson() {
@@ -179,6 +187,7 @@ function generateQuestJson() {
             },
             "secretQuest": false,
             "side": "Pmc",
+            "location": determineQuestLocation(),
             "startedMessageText": questId + " startedMessageText", // Will be replaced in locales
             "status": 0,
             "successMessageText": questId + " successMessageText", // Will be replaced in locales
@@ -186,6 +195,49 @@ function generateQuestJson() {
             "type": questType
         }
     };
+}
+
+function determineQuestLocation() {
+    const locationMap = {
+        "55f2d3fd4bdc2d5f408b4567": "Factory Day",
+        "59fc81d786f774390775787e": "Factory Night",
+        "56f40101d2720b2a4d8b45d6": "Customs",
+        "5704e3c2d2720bac5b8b4567": "Woods", 
+        "5704e4dad2720bb55b8b4567": "Lighthouse",
+        "5704e554d2720bac5b8b456e": "Shoreline",
+        "5704e5fad2720bc05b8b4567": "Reserve",
+        "5714dbc024597771384a510d": "Interchange",
+        "5b0fc42d86f7744a585f9105": "The Lab",
+        "5714dc692459777137212e12": "Streets",
+        "653e6760052c01c1c805532f": "Ground Zero"
+    };
+
+    const conditions = generateConditions()?.AvailableForFinish || [];
+    
+    // Find all Location conditions
+    const locationConditions = conditions.flatMap(condition => 
+        condition.counter?.conditions?.filter(c => c.conditionType === "Location") || []
+    );
+
+    // If no location conditions found, return "any"
+    if (locationConditions.length === 0) {
+        return "any";
+    }
+
+    // Check if any condition has "any" as target
+    const hasAnyLocation = locationConditions.some(c => 
+        c.target.includes("any") || c.target[0] === ""
+    );
+
+    // If "any" is present or multiple different locations, return "any"
+    const uniqueLocations = new Set(locationConditions.flatMap(c => c.target));
+    if (hasAnyLocation || uniqueLocations.size > 1) {
+        return "any";
+    }
+
+    // If we get here, there is exactly one unique location
+    const locationId = locationConditions[0].target[0];
+    return locationMap[locationId] || "any";
 }
 
 function generateConditions() {
@@ -228,8 +280,6 @@ function generateLocalesJson(questData) {
 
     return locales;
 }
-
-
 
 // Gerar condições de kill
 function generateKillConditions() {
@@ -596,7 +646,6 @@ $('#TraderStandingInput1').on('input', function () {
     $(this).val(value);
 });
 
-
 $('#copyJson').click(() => {
     if (crafts.length === 0) {
         showToast('No crafts to copy!', 'warning');
@@ -670,7 +719,6 @@ async function fetchQuestData() {
         return [];
     }
 }
-
 
 // Update loadQuestData to store the quests globally
 async function loadQuestData() {
@@ -889,6 +937,7 @@ $(document).ready(async () => {
     $('[data-bs-toggle="tooltip"]').tooltip();
 
     $('.quest-container').hide(); // Hide quest container by default
+    $('.barter-container').hide(); // Hide barter container by default
 
     $('#addQuestTask').click(function () {
         const taskType = $('#taskTypeSelect').val();

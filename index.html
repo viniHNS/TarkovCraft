@@ -38,6 +38,7 @@
                             <li><button class="dropdown-item" onclick="handleMongoId()">ID Generator</button></li>
                             <li><button class="dropdown-item" onclick="hideRecipeCreator()">Quest Creator</button></li>
                             <li><button class="dropdown-item" onclick="hideQuestCreator()">Recipe Creator</button></li>
+                            <li><button class="dropdown-item" onclick="hideBarterCreator()">Barter Creator</button></li>
                         </ul>
                     </div>
 
@@ -56,6 +57,69 @@
             </div>
         </div>
     </nav>
+
+    <div class="container-fluid p-4 mb-4 barter-container">
+        <div class="row mx-4 px-4">
+            <div class="col-md-4">
+                <div class="card mt-3 bg-dark text">
+                    <div class="card-header">
+                        <h5 class="card-title">Barters (WIP)</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="input-group mb-0">
+                                    <input type="text" class="form-control" placeholder="Barter name" aria-label="Barter Name">
+                                    <button class="btn btn-outline-secondary" type="button" id="button-addon">
+                                        Add
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="bartersList" class="mt-3">
+                            <div class="list-group mb-3" style="max-height: 400px; overflow-y: auto;">
+                                <!-- Dynamic added -->
+                            </div>  
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card mt-3 bg-dark text">
+                    <div class="card-header">
+                        <h5 class="card-title
+                        ">Create your Barter Trade</h5>
+                    </div>
+                    <div class="card-body pb-0">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p data-bs-toggle="tooltip" data-bs-placement="left" title="Choose the Items">Items</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p data-bs-toggle="tooltip" data-bs-placement="left" title="Some important values">General
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <select class="form-select ingredient-select" id="itemInput1">
+                                    <option></option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <select class="form-select ingredient-select" id="finalItemInput">
+                                    <option></option>
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+            </div>
+                    
+        </div>
+    </div>    
+
+    </div>
 
     <div class="container-fluid p-4 mb-4 quest-container">
         <div class="row mx-4 px-4">
@@ -501,6 +565,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="col-md-8">
                 <div class="card mt-3 bg-dark text">
                     <div class="card-header">
