@@ -69,7 +69,7 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="input-group mb-0">
-                                    <input type="text" class="form-control" placeholder="Barter name" aria-label="Barter Name">
+                                    <input type="text" class="form-control" id="barterNameInput" placeholder="Barter name" aria-label="Barter Name">
                                     <button class="btn btn-outline-secondary" type="button" id="button-addon">
                                         Add
                                     </button>
@@ -93,6 +93,37 @@
                     <div class="card-body pb-0">
                         <div class="row">
                             <div class="col-md-6">
+                                <p data-bs-toggle="tooltip" data-bs-placement="left" title="Basics things">Basics</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <select class="form-select ingredient-select" id="BartertraderSelect">
+                                    <option value="">Choose the trader</option>
+                                    <option value="54cb50c76803fa8b248b4571">Prapor</option>
+                                    <option value="54cb57776803fa99248b456e">Therapist</option>
+                                    <option value="579dc571d53a0658a154fbec">Fence</option>
+                                    <option value="58330581ace78e27b8b10cee">Skier</option>
+                                    <option value="5a7c2eca46aef81a7ca2145d">Mechanic</option>
+                                    <option value="5ac3b934156ae10c4430e83c">Ragman</option>
+                                    <option value="5935c25fb3acc3127c3d8cd9">Peacekeeper</option>
+                                    <option value="5c0647fdd443bc2504c2d371">Jaeger</option>
+                                    <option value="6617beeaa9cfa777ca915b7c">Ref</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <select class="form-select ingredient-select" id="BartertraderLoyalSelect">
+                                    <option value="">Choose the loyalty level</option>
+                                    <option value="1">I</option>
+                                    <option value="2">II</option>
+                                    <option value="3">III</option>
+                                    <option value="4">Max</option>
+                                </select>
+                            </div>
+                        </div>
+                        <hr class="mb-3">
+                        <div class="row">
+                            <div class="col-md-6">
                                 <p data-bs-toggle="tooltip" data-bs-placement="left" title="Choose the Items">Items</p>
                             </div>
                             <div class="col-md-6">
@@ -100,11 +131,14 @@
                                 </p>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-6">
+                        <div class="row mb-3">
+                            <div class="col-md-4">
                                 <select class="form-select ingredient-select" id="itemInput1">
                                     <option></option>
                                 </select>
+                            </div>
+                            <div class="col-md-2">
+                                <input class="form-control" id="itemQuantityInput1" placeholder="Item quantity" type="text">
                             </div>
                             <div class="col-md-6">
                                 <select class="form-select ingredient-select" id="finalItemInput">
@@ -112,13 +146,80 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <select class="form-select ingredient-select" id="itemInput2">
+                                    <option></option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <input class="form-control" id="itemQuantityInput2" placeholder="Item quantity" type="text">
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="barterUnlimitedCheckBox">
+                                    <label class="form-check-label" for="barterUnlimitedCheckBox">
+                                        Unlimited Count?
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" id="barterStackObjectsCount" placeholder="Stack Objects Count" type="text">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <select class="form-select ingredient-select" id="itemInput3">
+                                    <option></option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <input class="form-control" id="itemQuantityInput3" placeholder="Item quantity" type="text">
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" id="barterBuyRestrictionNumber" placeholder="Buy Restriction Number" type="text">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <select class="form-select ingredient-select" id="itemInput4">
+                                    <option></option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <input class="form-control" id="itemQuantityInput4" placeholder="Item quantity" type="text">
+                            </div>
+                        </div>
+                        
 
+                    </div>
+                    <div class="card-footer">
+                        <button id="generateBarterJson" class="btn btn-secondary w-100">
+                            <i class="fas fa-file-code"></i> Generate JSON
+                        </button>
                     </div>
             </div>
                     
         </div>
-    </div>    
-
+    </div> 
+    <div class="modal fade" id="barterJsonModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header">
+                    <h5 class="modal-title">Generated Barter JSON</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <pre id="barterJsonOutput" class="text-white"></pre>
+                </div>
+                <div class="modal-footer">
+                    <button id="copyBarterJson" class="btn btn-secondary">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>   
     </div>
 
     <div class="container-fluid p-4 mb-4 quest-container">

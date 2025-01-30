@@ -615,8 +615,75 @@ function generateRecipeJson() {
     }
 
     return recipe;
-
 }
+
+function generateBarterJson() {
+    const mongoId = generateObjectId();
+    const isUnlimited = $('#barterUnlimitedCheckBox').is(':checked');
+    const stackCount = isUnlimited ? 999999 : parseInt($('#barterStackObjectsCount').val()) || 1;
+
+    const barter = {
+        items: [
+            {
+                _id: mongoId,
+                _tpl: $('#finalItemInput').val(),
+                parentId: "hideout",
+                slotId: "hideout",
+                upd: {
+                    UnlimitedCount: isUnlimited,
+                    StackObjectsCount: stackCount,
+                    BuyRestrictionMax: parseInt($('#barterBuyRestrictionNumber').val()) || 1,
+                    BuyRestrictionCurrent: 0
+                }
+            }
+        ],
+        barter_scheme: {
+            [mongoId]: [[]]
+        },
+        loyal_level_items: {
+            [mongoId]: parseInt($('#traderLevelInput').val()) || 1
+        }
+    };
+
+    // Add barter items using respective quantity inputs
+    for (let i = 1; i <= 4; i++) {
+        const itemId = $(`#itemInput${i}`).val();
+        const itemCount = parseInt($(`#itemQuantityInput${i}`).val());
+        
+        if (itemId && !isNaN(itemCount)) {
+            barter.barter_scheme[mongoId][0].push({
+                count: itemCount,
+                _tpl: itemId
+            });
+        }
+    }
+
+    return barter;
+}
+
+$('#generateBarterJson').click(() => {
+    if (barters.length === 0) {
+        showToast('No barters to generate!', 'warning');
+        return;
+    }
+    
+    // Remove displayName from barters before generating JSON
+    const cleanBarters = barters.map(({ displayName, ...rest }) => rest);
+    $('#barterJsonOutput').text(JSON.stringify(cleanBarters, null, 2));
+    new bootstrap.Modal('#barterJsonModal').show();
+});
+
+$('#button-addon').click(addBarter);
+
+$('#copyBarterJson').click(() => {
+    if (barters.length === 0) {
+        showToast('No barters to copy!', 'warning');
+        return;
+    }
+    
+    navigator.clipboard.writeText($('#barterJsonOutput').text());
+    showToast('All barters copied!', 'success');
+});
 
 $('.wip').click(() => {
     showToast('This feature is not yet implemented', 'warning');
@@ -757,43 +824,113 @@ async function loadData() {
         const cachedData = localStorage.getItem('cachedItems');
 
         if (cachedData) {
-            items = JSON.parse(cachedData); // Atualiza a variável global
+            items = JSON.parse(cachedData);
             console.log('Loaded from cache:', items.length, 'items');
             initializeAllSelect2(items);
+            initializeBarterSelects(items); // Add this line
         }
 
         if (!items.length) {
             showToast('Fetching latest data...', 'info');
-            items = await fetchData(); // Atualiza a variável global
+            items = await fetchData();
 
             if (items.length) {
                 localStorage.setItem('cachedItems', JSON.stringify(items));
                 console.log('Saved to cache:', items.length, 'items');
                 initializeAllSelect2(items);
+                initializeBarterSelects(items); // Add this line
             }
         }
-
-        // Inicializar o primeiro reward item select
-        $('#rewardItemInput1').select2({
-            theme: 'bootstrap-5',
-            placeholder: 'Select item...',
-            data: items.map(item => ({
-                id: item.id,
-                text: `${item.name} (${item.id})`
-            })),
-            width: '100%'
-        });
-
     } catch (error) {
         console.error('Load Error:', error);
-        showToast('Failed to load data. Using fallback.', 'danger');
-        initializeWithFallbackData();
+        showToast('Failed to load data!', 'danger');
     }
 }
 
+function initializeBarterSelects(items) {
+    const selectConfig = {
+        theme: 'bootstrap-5',
+        placeholder: 'Search item...',
+        data: items.map(item => ({
+            id: item.id,
+            text: `${item.name} (${item.id})`
+        })),
+        width: '100%',
+        allowClear: true
+    };
+
+    // Initialize all item inputs (itemInput1 through itemInput4)
+    for (let i = 1; i <= 4; i++) {
+        $(`#itemInput${i}`).select2(selectConfig);
+    }
+
+    // Initialize final item input with same config but different placeholder
+    $('#finalItemInput').select2({
+        ...selectConfig,
+        placeholder: 'Select final item...'
+    });
+}
+
+let currentBarterName = '';
 let crafts = [];
 let items = [];
 let quests = [];
+let barters = [];
+
+function addBarter() {
+    const barterJson = generateBarterJson();
+    if (!barterJson) {
+        showToast('Failed to generate barter!', 'warning');
+        return;
+    }
+
+    // Get the barter name from input
+    const barterName = $('#barterNameInput').val().trim() || `Barter ${barters.length + 1}`;
+    
+    // Add display name to barter object (won't be included in final JSON)
+    barterJson.displayName = barterName;
+
+    barters.push(barterJson);
+    updateBartersList();
+    resetBarterForm();
+    showToast('Barter added successfully!', 'success');
+}
+
+function resetBarterForm() {
+    // Reset barter name
+    $('#barterNameInput').val('');
+    
+    // Reset all other inputs
+    $('#traderSelect').val(null).trigger('change');
+    $('#traderLevelInput').val('');
+    $('#barterBuyRestrictionNumber').val('');
+    $('#barterStackObjectsCount').val('');
+    $('#barterUnlimitedCheckBox').prop('checked', false);
+    $('#finalItemInput').val(null).trigger('change');
+    
+    // Reset all item selects
+    for (let i = 1; i <= 4; i++) {
+        $(`#itemInput${i}`).val(null).trigger('change');
+        $(`#itemQuantityInput${i}`).val('');
+    }
+}
+
+function updateBartersList() {
+    const list = $('#bartersList .list-group');
+    list.empty();
+
+    barters.forEach((barter, index) => {
+        const itemId = barter.items[0]._tpl;
+        const itemName = items.find(item => item.id === itemId)?.name || itemId;
+        
+        list.append(`
+            <div class="list-group-item d-flex justify-content-between align-items-center rounded-2 my-1">
+                <span>${barter.displayName}</span>
+                <small>${itemName}</small>
+            </div>
+        `);
+    });
+}
 
 function resetForm() {
     $('#craftNameInput').val('');
