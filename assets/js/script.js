@@ -632,6 +632,17 @@ function generateBarterJson() {
         return null;
     }
 
+    // Validate item quantities for selected items
+    for (let i = 1; i <= 4; i++) {
+        const itemId = $(`#itemInput${i}`).val();
+        const quantity = $(`#itemQuantityInput${i}`).val();
+        
+        if (itemId && !quantity) {
+            showToast(`Please enter quantity for item ${i}!`, 'warning');
+            return null;
+        }
+    }
+
     const mongoId = generateObjectId();
     const isUnlimited = $('#barterUnlimitedCheckBox').is(':checked');
     const stackCount = isUnlimited ? 999999 : parseInt($('#barterStackObjectsCount').val()) || 1;
@@ -1129,6 +1140,36 @@ $(document).ready(async () => {
 
     $('.quest-container').hide(); // Hide quest container by default
     $('.barter-container').hide(); // Hide barter container by default
+
+    
+    // Add validation for quantity inputs
+    for (let i = 1; i <= 4; i++) {
+        // Validate when item is selected
+        $(`#itemInput${i}`).on('change', function() {
+            const itemNumber = i;
+            const quantityInput = $(`#itemQuantityInput${itemNumber}`);
+            
+            if ($(this).val() && !quantityInput.val()) {
+                quantityInput.addClass('is-invalid');
+                showToast(`Please enter quantity for item ${itemNumber}!`, 'warning');
+            } else {
+                quantityInput.removeClass('is-invalid');
+            }
+        });
+
+        // Validate when quantity changes
+        $(`#itemQuantityInput${i}`).on('input', function() {
+            const input = $(this);
+            if (input.val()) {
+                input.removeClass('is-invalid');
+            } else {
+                const itemInput = $(`#itemInput${i}`);
+                if (itemInput.val()) {
+                    input.addClass('is-invalid');
+                }
+            }
+        });
+    }
 
     $('#addQuestTask').click(function () {
         const taskType = $('#taskTypeSelect').val();
