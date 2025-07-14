@@ -11,8 +11,6 @@ import { IPreSptLoadMod } from "@spt/models/external/IPreSptLoadMod";
 import { IDatabaseTables } from "@spt/models/spt/server/IDatabaseTables";
 
 import crafts from "../crafts/crafts.json";
-import quests from "../quests/quests.json";
-import questLocales from "../quests/questLocales.json";
 import config from "../config/config.json";
 import barters from "../barters/barters.json";
 
@@ -48,7 +46,6 @@ class Mod implements IPostDBLoadMod, IPreSptLoadMod
 
         // Add new crafts
         const newCrafts = crafts;
-        const newQuests = quests;
         const newBarters = barters;
 
         // Add new recipes
@@ -96,34 +93,7 @@ class Mod implements IPostDBLoadMod, IPreSptLoadMod
                 }
             }
         }
-
-    
-        // Add new quests
-        for (const questToAdd in newQuests) {
-            this.customLogger(`[ViniHNS] ${this.mod} - Adding Quest ${questToAdd}`, LogTextColor.GREEN);
-            // Check if quest exists
-            let questExists = false;
-            for(const quest in tables.templates.quests){
-                if(quest === questToAdd) {
-                    this.customLogger(`[ViniHNS] ${this.mod} - Quest ${questToAdd} already exists`, LogTextColor.MAGENTA);
-                    questExists = true;
-                    break;
-                }
-            }
-            if(questExists) continue;
-
-            // Add quest
-            tables.templates.quests[questToAdd] = newQuests[questToAdd];
-            this.customLogger(`[ViniHNS] ${this.mod} - Added Quest ${questToAdd}`, LogTextColor.GREEN);
-        }
-
-        // Add quest locales
-        for (const questLocale in questLocales) {
-            tables.locales.global["en"][questLocale] = questLocales[questLocale];
-            this.customLogger(`[${this.mod}] Added Locale ${questLocale}`, LogTextColor.GREEN);
-        }
-
-        
+      
         this.logger.logWithColor(
             `[ViniHNS] ${this.mod} - Database Loaded`,
             LogTextColor.GREEN
