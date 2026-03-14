@@ -375,6 +375,5 @@ function renderJsonPreview(crafts) {
   pre.innerHTML = highlightJson(json);
 }
 
-// Note: initSidebar is deferred — only Craft section is active; Barter is WIP (pointer-events: none).
-// When Barter is implemented, wire initSidebar to toggle panel visibility.
+// Note: initSidebar is deferred — only Craft section is active;
 export { Combobox, toast, renderJsonPreview };
