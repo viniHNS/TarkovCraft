@@ -1,454 +1,317 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tarkov Craft</title>
-    <meta name="description" content="Create your own Tarkov crafts">
-    <meta property="og:description" content="Create your own Tarkov crafts">
-    <meta property="og:title" content="Tarkov Craft">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="./assets/css/main.css">
-    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <link rel="icon" href="./assets/img/favicon-svg.svg" type="image/svg+xml">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tarkov Craft</title>
+  <meta name="description" content="Craft recipe generator for SPT modders">
+  <link rel="icon" href="./assets/img/favicon-svg.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./assets/css/main.css">
 </head>
-
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-            <!-- Left-aligned Brand -->
-            <a class="navbar-brand" href="#">TARKOV CRAFT</a>
 
-            <!-- Mobile Toggle Button -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <!-- Right-aligned Content -->
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <div class="ms-auto d-flex align-items-center">
-                    <!-- Dropdown Menu -->
-                    <div class="dropdown me-2">
-                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="toolsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            Tools
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="toolsDropdown">
-                            <li><button class="dropdown-item" onclick="handleMongoId()">ID Generator</button></li>
-                            <li><button class="dropdown-item" onclick="hideQuestCreator()">Recipe Creator</button></li>
-                            <li><button class="dropdown-item" onclick="hideBarterCreator()">Barter Creator</button></li>
-                        </ul>
-                    </div>
+<!-- Loading Splash -->
+<div id="splash" class="splash-overlay" aria-hidden="true">
+  <div class="splash-card">
 
-                    <!-- Other Buttons -->
-                    <button class="btn btn-outline-secondary me-2" onclick="localStorage.clear(); location.reload();">
-                        Clear LocalStorage
-                    </button>
-                </div>
-            </div>
-        </div>
+    <div id="splash-loading">
+      <div class="splash-spinner"></div>
+      <p class="splash-title">Loading item database</p>
+      <p class="splash-sub">Fetching data from the Tarkov API&hellip;</p>
+    </div>
+
+    <div id="splash-error" style="display:none">
+      <div class="splash-error-icon">⚠</div>
+      <p class="splash-title">Connection Failed</p>
+      <p class="splash-sub">Could not fetch item data from the Tarkov API.<br>Check your connection and try again.</p>
+      <div class="splash-actions">
+        <button class="btn-confirm-cancel" id="btn-splash-continue">Continue Anyway</button>
+        <button class="btn-confirm-danger" id="btn-splash-retry" style="border-color:var(--gold);color:var(--gold);">Try Again</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="app">
+
+  <!-- Header -->
+  <header id="header">
+    <div class="header-left">
+      <span class="app-title">Tarkov Craft</span>
+    </div>
+    <div class="header-right">
+      <span class="version-label">v2.0</span>
+      <button class="btn-clear" id="btn-clear-db">Clear DB</button>
+    </div>
+  </header>
+
+  <!-- Body row -->
+  <div id="body-row">
+
+    <!-- Sidebar -->
+    <nav id="sidebar">
+      <button class="sidebar-btn active" data-section="craft" title="Craft Creator">
+        <i class="fa-solid fa-hammer"></i>
+        <span>Craft</span>
+      </button>
+      <button class="sidebar-btn wip" title="Coming soon">
+        <i class="fa-solid fa-right-left"></i>
+        <span>Barter</span>
+      </button>
+      <button class="sidebar-btn" id="btn-stations" title="Hideout Stations">
+        <i class="fa-solid fa-house"></i>
+        <span>Stations</span>
+      </button>
+      <div class="sidebar-sep"></div>
+      <button class="sidebar-btn" id="btn-id-gen" title="Generate MongoDB ObjectId">
+        <i class="fa-solid fa-fingerprint"></i>
+        <span>MongoID</span>
+      </button>
+      <button class="sidebar-btn" id="btn-tips" title="Tips &amp; Tricks">
+        <i class="fa-solid fa-lightbulb"></i>
+        <span>Tips</span>
+      </button>
+      <div class="sidebar-spacer"></div>
+      <div class="sidebar-sep"></div>
+      <button class="sidebar-btn sidebar-about" id="btn-about" title="About TarkovCraft">
+        <i class="fa-solid fa-circle-info"></i>
+        <span>About</span>
+      </button>
     </nav>
 
-    <div class="container-fluid p-4 mb-4 barter-container">
-        <div class="row mx-4 px-4">
-            <div class="col-md-4">
-                <div class="card mt-3 bg-dark text">
-                    <div class="card-header">
-                        <h5 class="card-title">Barters (WIP)</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="input-group mb-0">
-                                    <input type="text" class="form-control" id="barterNameInput" placeholder="Barter name" aria-label="Barter Name">
-                                    <button class="btn btn-outline-secondary" type="button" id="button-addon">
-                                        Add
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="bartersList" class="mt-3">
-                            <div class="list-group mb-3" style="max-height: 400px; overflow-y: auto;">
-                                <!-- Dynamic added -->
-                            </div>  
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-8">
-                <div class="card mt-3 bg-dark text">
-                    <div class="card-header">
-                        <h5 class="card-title
-                        ">Create your Barter Trade</h5>
-                    </div>
-                    <div class="card-body pb-0">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <p data-bs-toggle="tooltip" data-bs-placement="left" title="Basics things">Basics</p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <select class="form-select ingredient-select" id="BartertraderSelect">
-                                    <option value="">Choose the trader</option>
-                                    <option value="54cb50c76803fa8b248b4571">Prapor</option>
-                                    <option value="54cb57776803fa99248b456e">Therapist</option>
-                                    <option value="579dc571d53a0658a154fbec">Fence</option>
-                                    <option value="58330581ace78e27b8b10cee">Skier</option>
-                                    <option value="5a7c2eca46aef81a7ca2145d">Mechanic</option>
-                                    <option value="5ac3b934156ae10c4430e83c">Ragman</option>
-                                    <option value="5935c25fb3acc3127c3d8cd9">Peacekeeper</option>
-                                    <option value="5c0647fdd443bc2504c2d371">Jaeger</option>
-                                    <option value="6617beeaa9cfa777ca915b7c">Ref</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <select class="form-select ingredient-select" id="BartertraderLoyalSelect">
-                                    <option value="">Choose the loyalty level</option>
-                                    <option value="1">I</option>
-                                    <option value="2">II</option>
-                                    <option value="3">III</option>
-                                    <option value="4">Max</option>
-                                </select>
-                            </div>
-                        </div>
-                        <hr class="mb-3">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <p data-bs-toggle="tooltip" data-bs-placement="left" title="Choose the Items">Items</p>
-                            </div>
-                            <div class="col-md-6">
-                                <p data-bs-toggle="tooltip" data-bs-placement="left" title="Some important values">General
-                                </p>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <select class="form-select ingredient-select" id="itemInput1">
-                                    <option></option>
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <input class="form-control" id="itemQuantityInput1" placeholder="Item quantity" type="text">
-                            </div>
-                            <div class="col-md-6">
-                                <select class="form-select ingredient-select" id="finalItemInput">
-                                    <option></option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <select class="form-select ingredient-select" id="itemInput2">
-                                    <option></option>
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <input class="form-control" id="itemQuantityInput2" placeholder="Item quantity" type="text">
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="" id="barterUnlimitedCheckBox">
-                                    <label class="form-check-label" for="barterUnlimitedCheckBox">
-                                        Unlimited Count?
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <input class="form-control" id="barterStackObjectsCount" placeholder="Stack Objects Count" type="text">
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <select class="form-select ingredient-select" id="itemInput3">
-                                    <option></option>
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <input class="form-control" id="itemQuantityInput3" placeholder="Item quantity" type="text">
-                            </div>
-                            <div class="col-md-3">
-                                <input class="form-control" id="barterBuyRestrictionNumber" placeholder="Buy Restriction Number" type="text">
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <select class="form-select ingredient-select" id="itemInput4">
-                                    <option></option>
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <input class="form-control" id="itemQuantityInput4" placeholder="Item quantity" type="text">
-                            </div>
-                        </div>
-                        
+    <!-- Center panel -->
+    <main id="center-panel">
 
-                    </div>
-                    <div class="card-footer">
-                        <button id="generateBarterJson" class="btn btn-secondary w-100">
-                            <i class="fas fa-file-code"></i> Generate JSON
-                        </button>
-                    </div>
-            </div>
-                    
+      <!-- Crafts list (collapsible) -->
+      <section id="crafts-list-section">
+        <div class="section-header" id="crafts-list-toggle">
+          <span class="section-title" id="crafts-list-title">Crafts — 0 items</span>
+          <span class="section-toggle" id="crafts-list-chevron">▶</span>
         </div>
-    </div> 
-    <div class="modal fade" id="barterJsonModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content bg-dark text-white">
-                <div class="modal-header">
-                    <h5 class="modal-title">Generated Barter JSON</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <pre id="barterJsonOutput" class="text-white"></pre>
-                </div>
-                <div class="modal-footer">
-                    <button id="copyBarterJson" class="btn btn-secondary">
-                        <i class="fas fa-copy"></i> Copy
-                    </button>
-                </div>
-            </div>
+        <div id="crafts-list-body" class="collapsed">
+          <!-- Craft rows injected here by craft.js -->
         </div>
-    </div>   
+      </section>
+
+      <!-- Craft form -->
+      <section id="craft-form-section">
+
+        <!-- Craft name -->
+        <div class="field-group form-group-section">
+          <div class="field-label">
+            <span>Craft Name</span>
+            <span class="field-hint">Defaults to "Craft N" if blank</span>
+          </div>
+          <input type="text" id="craft-name" class="tc-input" placeholder="e.g. My Med Kit">
+        </div>
+
+        <!-- Ingredients -->
+        <div class="field-group form-group-section">
+          <div class="field-label">
+            <span>Ingredients</span>
+            <button class="field-label-action" id="btn-add-ingredient">+ Add</button>
+          </div>
+          <div id="ingredient-rows">
+            <!-- Ingredient rows injected by script.js -->
+          </div>
+        </div>
+
+        <!-- Tools -->
+        <div class="field-group form-group-section">
+          <div class="field-label">
+            <span>Tools <span class="field-tag">Optional</span></span>
+            <button class="field-label-action" id="btn-add-tool">+ Add</button>
+          </div>
+          <div id="tool-rows">
+            <!-- Tool rows injected by script.js -->
+          </div>
+        </div>
+
+        <!-- Output -->
+        <div class="field-group form-group-output">
+          <div class="field-label">
+            <span>Output Item</span>
+          </div>
+          <div id="end-product-wrap" class="combobox-wrap" style="margin-bottom:8px;">
+            <!-- End product combobox injected by script.js -->
+          </div>
+          <div class="output-count-row">
+            <span class="cell-label">Produces</span>
+            <input type="number" id="craft-count" class="tc-input-number output-count-input" placeholder="1" value="1">
+            <span class="cell-label">units per craft</span>
+          </div>
+        </div>
+
+        <!-- Production settings -->
+        <div class="field-group form-group-section">
+          <div class="field-label"><span>Production</span></div>
+          <div class="production-grid">
+            <div class="production-cell">
+              <div class="cell-label">Station</div>
+              <select id="hideout-area" class="tc-select">
+                <option value="">Select area</option>
+                <option value="2">LAVATORY</option>
+                <option value="6">WATER COLLECTOR</option>
+                <option value="7">MEDSTATION</option>
+                <option value="8">NUTRITION UNIT</option>
+                <option value="10">WORKBENCH</option>
+                <option value="11">INTELLIGENCE CENTER</option>
+                <option value="19">BOOZE GENERATOR</option>
+              </select>
+            </div>
+            <div class="production-cell">
+              <div class="cell-label">Min. Level</div>
+              <input type="number" id="hideout-level" class="tc-input-number" placeholder="1" value="1">
+            </div>
+            <div class="production-cell">
+              <div class="cell-label">
+                Duration (minutes)
+                <span id="time-hint" class="time-hint"></span>
+              </div>
+              <input type="number" id="craft-time" class="tc-input-number" placeholder="e.g. 30">
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-add-craft" id="btn-add-craft">
+          <span class="btn-craft-icon">+</span> Add Craft
+        </button>
+
+      </section>
+    </main>
+
+    <!-- Resizable divider -->
+    <div id="resizer"></div>
+
+    <!-- JSON preview panel -->
+    <aside id="json-panel">
+      <div id="json-panel-header">
+        <span id="json-panel-label">crafts.json — 0 items</span>
+      </div>
+      <div id="json-body">
+        <pre id="json-pre"></pre>
+      </div>
+      <div id="json-panel-footer">
+        <div class="json-footer-left">
+          <button class="btn-json" id="btn-copy-json">
+            <i class="fa-regular fa-copy"></i> Copy All
+          </button>
+          <button class="btn-json" id="btn-download-json">
+            <i class="fa-solid fa-download"></i> Download .json
+          </button>
+        </div>
+        <a href="#" target="_blank" rel="noopener" class="btn-get-mod">
+          <i class="fa-solid fa-puzzle-piece"></i>
+          <span>Get SPT Mod</span>
+        </a>
+      </div>
+    </aside>
+
+  </div><!-- /body-row -->
+</div><!-- /app -->
+
+<!-- Toast container -->
+<div id="toast-container"></div>
+
+<!-- About Modal -->
+<div id="modal-about" class="modal-overlay" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-labelledby="modal-about-title">
+    <button class="modal-close" id="btn-modal-about-close" aria-label="Close">✕</button>
+    <div class="modal-logo-row">
+      <div>
+        <h1 class="modal-app-title" id="modal-about-title">Tarkov Craft</h1>
+        <span class="modal-version">v2.0</span>
+      </div>
     </div>
-
-    <div class="container-fluid p-4 recipe-container">
-        <div class="row mx-4 px-4">
-            <div class="col-md-4">
-                <div class="card mt-3 bg-dark text">
-                    <div class="card-header">
-                        <h5 class="card-title">Crafts (WIP)</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="input-group mb-0">
-                                    <input type="text" class="form-control" placeholder="Craft name" aria-label="Craft Name" id="craftNameInput">
-                                    <button class="btn btn-outline-secondary" type="button" id="button-addon2">
-                                        Add
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="craftsList" class="mt-3">
-                            <div class="list-group" style="max-height: 400px; overflow-y: auto;">
-                                <!-- Dynamic added -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-8">
-                <div class="card mt-3 bg-dark text">
-                    <div class="card-header">
-                        <h5 class="card-title
-                        ">Create a Craft recipe</h5>
-                    </div>
-                    <div class="card-body pb-0">
-                        <div class="row">
-                            <div class="col-md-9">
-                                <p data-bs-toggle="tooltip" data-bs-placement="left" title="Choose the Ingredients">
-                                    Ingredients</p>
-                            </div>
-                            <div class="col-md-3">
-                                <p data-bs-toggle="tooltip" data-bs-placement="left" title="Choose the Amount of Ingredients">Amount</p>
-                            </div>
-                        </div>
-
-                        <div id="ingredientRows">
-                            <!-- Row 1 -->
-                            <div class="row mb-3">
-                                <div class="col-md-9">
-                                    <select class="form-select ingredient-select" id="ingredientInput1">
-                                        <option></option>
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <input class="form-control" id="ingredientAmountInput1" placeholder="How many?" type="number">
-                                </div>
-                            </div>
-
-                            <!-- Row 2 -->
-                            <div class="row mb-3">
-                                <div class="col-md-9">
-                                    <select class="form-select ingredient-select" id="ingredientInput2">
-                                        <option></option>
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <input class="form-control" id="ingredientAmountInput2" placeholder="How many?" type="number">
-                                </div>
-                            </div>
-
-                            <!-- Row 3 -->
-                            <div class="row mb-3">
-                                <div class="col-md-9">
-                                    <select class="form-select ingredient-select" id="ingredientInput3">
-                                        <option></option>
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <input class="form-control" id="ingredientAmountInput3" placeholder="How many?" type="number">
-                                </div>
-                            </div>
-
-                            <!-- Row 4 -->
-                            <div class="row mb-3">
-                                <div class="col-md-9">
-                                    <select class="form-select ingredient-select" id="ingredientInput4">
-                                        <option></option>
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <input class="form-control" id="ingredientAmountInput4" placeholder="How many?" type="number">
-                                </div>
-                            </div>
-                        </div>
-
-                        <hr class="mt-4">
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <p data-bs-toggle="tooltip" data-bs-placement="left" title="Choose the Tools (If empty, it will be a craft without tools)">Tools</p>
-                            </div>
-                            <div class="col-md-6">
-                                <p data-bs-toggle="tooltip" data-bs-placement="left" title="Some important values">Misc.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div id="toolRows">
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <select class="form-select tool-select" id="toolInput1">
-                                        <option></option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6">
-                                    <select class="form-select tool-select" id="finalProductInput">
-                                        <option></option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <select class="form-select tool-select" id="toolInput2">
-                                        <option></option>
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <input class="form-control" id="craftTimeInput" placeholder="Time to craft" data-bs-toggle="tooltip" data-bs-placement="left" title="In minutes" type="number">
-                                </div>
-                                <div class="col-md-3">
-                                    <select class="form-select tool-select" id="HideoutAreaInput">
-                                        <option></option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <select class="form-select tool-select" id="toolInput3">
-                                        <option></option>
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <input class="form-control" id="endProductCountInput" placeholder="Amount of end product" type="number">
-                                </div>
-                                <div class="col-md-3">
-                                    <input class="form-control" id="hideoutLevelInput" placeholder="Hideout Area LVL" type="number" data-bs-toggle="tooltip" data-bs-placement="top" title="Keep in mind, hideout areas have a maximum level.">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <button id="generateJson" class="btn btn-secondary w-100">
-                                <i class="fas fa-file-code"></i> Generate JSON
-                            </button>
-                        </div>
-
-                        <!-- Modal for displaying the generated JSON -->
-                        <div class="modal fade" id="jsonModal" tabindex="-1">
-                            <div class="modal-dialog modal-lg">
-                                <div class="modal-content bg-dark text-white">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">Generated Recipe JSON</h5>
-                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <pre id="jsonOutput" class="text-white"></pre>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button id="copyJson" class="btn btn-secondary">
-                                            <i class="fas fa-copy"></i> Copy
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <p class="modal-desc">
+      A craft recipe generator for SPT modders.
+      Build hideout craft recipes without writing JSON by hand — export a
+      schema-compliant <code>crafts.json</code> ready to drop into your SPT mod.
+    </p>
+    <div class="modal-footer-line">
+      Made for the SPT modding community
     </div>
+  </div>
+</div>
 
-    <footer class="footer bg-dark text-center text-white mt-auto">
-        <!-- Grid container -->
-        <div class="container-fluid p-1" style="background-color: #14141433;">
-            <div class="row align-items-center">
-                <p class="text text-center m-0 p-1" data-bs-toggle="tooltip" data-bs-placement="top" title="All the information is provided by Tarkov.DEV API">The database is stored using
-                    localStorage.</p>
-            </div>
+<!-- Tips Modal -->
+<div id="modal-tips" class="modal-overlay" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-labelledby="modal-tips-title">
+    <button class="modal-close" id="btn-modal-tips-close" aria-label="Close">✕</button>
+    <h2 class="modal-section-title" id="modal-tips-title">Tips &amp; Tricks</h2>
+    <ul class="modal-tips-list">
+      <li><strong>Custom Item</strong> — Check "Custom" on any ingredient, tool, or output to paste a MongoDB ObjectId directly instead of searching the API.</li>
+      <li><strong>MongoID</strong> — Click the MongoID button in the sidebar to generate and copy a fresh ObjectId to your clipboard instantly.</li>
+      <li><strong>Production time</strong> is entered in minutes. A live preview (e.g. "= 1h 30m") appears as you type in the duration field.</li>
+      <li><strong>Export</strong> — Use Copy All or Download .json to get your schema-compliant <code>crafts.json</code> for your SPT mod.</li>
+      <li><strong>Item cache</strong> — Items from the Tarkov API are cached locally in your browser. Use Clear DB in the header to force a fresh fetch.</li>
+    </ul>
+  </div>
+</div>
 
-        </div>
-        <div class="container-fluid p-2">
-            <div class="row align-items-center">
-                <div class="col-md-4">
-                    <p class="text text-center m-0">© 2025 - Tarkov Craft - Made by ViniHNS</a>
-                </div>
-                <div class="col-md-4">
-                    <p class="text text-center m-0"> Made with <a class="text-center m-0 text-decoration-none" href="http://www.aka.ms/confidential" target="_blank"><i class="fa-solid fa-heart" aria-hidden="true" style="color: red;"></i></a></p>
-                </div>
-                <div class="col-md-4">
-                    <!-- Github -->
-                    <a class="btn btn-outline-light btn-floating m-1" href="https://github.com/viniHNS" target="_blank" role="button" data-bs-toggle="tooltip" data-bs-placement="top" title="GitHub">
-                        <i class="fab fa-github"></i>
-                    </a>
-                    <!-- Discord -->
-                    <a class="btn btn-outline-light btn-floating m-1" href="javascript:void(0);" role="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Click to copy my Discord username" onclick="copyDiscordUsername()">
-                        <i class="fab fa-discord"></i>
-                    </a>
-                    <!-- Buy me a Coffee -->
-                    <a class="btn btn-outline-light btn-floating m-1" href="https://ko-fi.com/vinihns" target="_blank" role="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Support me!">
-                        <i class="fas fa-coffee"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <div class="toast-container position-fixed bottom-0 end-0 p-3">
-        <div id="errorToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="d-flex">
-                <div class="toast-body" id="toastMessage"></div>
-                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
-            </div>
-        </div>
+<!-- Confirm Clear DB Modal -->
+<div id="modal-confirm-clear" class="modal-overlay" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-labelledby="modal-confirm-clear-title">
+    <h2 class="modal-section-title" id="modal-confirm-clear-title">Clear DB</h2>
+    <p class="modal-desc">Clear all cached item data and session crafts? <strong>This cannot be undone.</strong></p>
+    <div class="modal-confirm-actions">
+      <button class="btn-confirm-cancel" id="btn-confirm-clear-cancel">Cancel</button>
+      <button class="btn-confirm-danger" id="btn-confirm-clear-ok">Clear DB</button>
     </div>
+  </div>
+</div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script src="https://kit.fontawesome.com/62c44247f4.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script>
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl)
-        })
-    </script>
-    <script src="./assets/js/script.js"></script>
+<!-- Stations Modal -->
+<div id="modal-stations" class="modal-overlay" aria-hidden="true">
+  <div class="modal-card modal-card-wide" role="dialog" aria-labelledby="modal-stations-title">
+    <button class="modal-close" id="btn-modal-stations-close" aria-label="Close">✕</button>
+    <h2 class="modal-section-title" id="modal-stations-title">Hideout Stations</h2>
+    <div class="stations-table-wrap">
+    <table class="stations-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Area ID</th>
+          <th>Max Level</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>VENTS</td><td class="stations-id" title="Click to copy">0</td><td>3</td></tr>
+        <tr><td>SECURITY</td><td class="stations-id" title="Click to copy">1</td><td>3</td></tr>
+        <tr class="station-craftable"><td>LAVATORY <span class="station-craft-badge">craft</span></td><td class="stations-id" title="Click to copy">2</td><td>3</td></tr>
+        <tr><td>STASH</td><td class="stations-id" title="Click to copy">3</td><td>4</td></tr>
+        <tr><td>GENERATOR</td><td class="stations-id" title="Click to copy">4</td><td>3</td></tr>
+        <tr><td>HEATING</td><td class="stations-id" title="Click to copy">5</td><td>3</td></tr>
+        <tr class="station-craftable"><td>WATER COLLECTOR <span class="station-craft-badge">craft</span></td><td class="stations-id" title="Click to copy">6</td><td>3</td></tr>
+        <tr class="station-craftable"><td>MEDSTATION <span class="station-craft-badge">craft</span></td><td class="stations-id" title="Click to copy">7</td><td>3</td></tr>
+        <tr class="station-craftable"><td>NUTRITION UNIT <span class="station-craft-badge">craft</span></td><td class="stations-id" title="Click to copy">8</td><td>3</td></tr>
+        <tr><td>REST SPACE</td><td class="stations-id" title="Click to copy">9</td><td>3</td></tr>
+        <tr class="station-craftable"><td>WORKBENCH <span class="station-craft-badge">craft</span></td><td class="stations-id" title="Click to copy">10</td><td>3</td></tr>
+        <tr class="station-craftable"><td>INTELLIGENCE CENTER <span class="station-craft-badge">craft</span></td><td class="stations-id" title="Click to copy">11</td><td>3</td></tr>
+        <tr><td>SHOOTING RANGE</td><td class="stations-id" title="Click to copy">12</td><td>3</td></tr>
+        <tr><td>LIBRARY</td><td class="stations-id" title="Click to copy">13</td><td>1</td></tr>
+        <tr><td>SCAV CASE</td><td class="stations-id" title="Click to copy">14</td><td>1</td></tr>
+        <tr><td>ILLUMINATION</td><td class="stations-id" title="Click to copy">15</td><td>3</td></tr>
+        <tr><td>PLACE OF FAME</td><td class="stations-id" title="Click to copy">16</td><td>3</td></tr>
+        <tr><td>AIR FILTERING UNIT</td><td class="stations-id" title="Click to copy">17</td><td>1</td></tr>
+        <tr><td>SOLAR POWER</td><td class="stations-id" title="Click to copy">18</td><td>1</td></tr>
+        <tr class="station-craftable"><td>BOOZE GENERATOR <span class="station-craft-badge">craft</span></td><td class="stations-id" title="Click to copy">19</td><td>1</td></tr>
+        <tr><td>BITCOIN FARM</td><td class="stations-id" title="Click to copy">20</td><td>3</td></tr>
+        <tr><td>CHRISTMAS TREE</td><td class="stations-id" title="Click to copy">21</td><td>1</td></tr>
+        <tr><td>BROKEN WALL</td><td class="stations-id" title="Click to copy">22</td><td>6</td></tr>
+        <tr><td>GYM</td><td class="stations-id" title="Click to copy">23</td><td>1</td></tr>
+        <tr><td>WEAPON RACK</td><td class="stations-id" title="Click to copy">24</td><td>3</td></tr>
+        <tr><td>WEAPON RACK SECONDARY</td><td class="stations-id" title="Click to copy">25</td><td>3</td></tr>
+        <tr><td>GEAR RACK</td><td class="stations-id" title="Click to copy">26</td><td>3</td></tr>
+        <tr><td>CULTIST CIRCLE</td><td class="stations-id" title="Click to copy">27</td><td>1</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+<script src="https://kit.fontawesome.com/62c44247f4.js" crossorigin="anonymous"></script>
+<script type="module" src="./assets/js/script.js"></script>
 </body>
-
 </html>
