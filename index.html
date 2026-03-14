@@ -9,12 +9,35 @@
   <link rel="stylesheet" href="./assets/css/main.css">
 </head>
 <body>
+
+<!-- Loading Splash -->
+<div id="splash" class="splash-overlay" aria-hidden="true">
+  <div class="splash-card">
+
+    <div id="splash-loading">
+      <div class="splash-spinner"></div>
+      <p class="splash-title">Loading item database</p>
+      <p class="splash-sub">Fetching data from the Tarkov API&hellip;</p>
+    </div>
+
+    <div id="splash-error" style="display:none">
+      <div class="splash-error-icon">⚠</div>
+      <p class="splash-title">Connection Failed</p>
+      <p class="splash-sub">Could not fetch item data from the Tarkov API.<br>Check your connection and try again.</p>
+      <div class="splash-actions">
+        <button class="btn-confirm-cancel" id="btn-splash-continue">Continue Anyway</button>
+        <button class="btn-confirm-danger" id="btn-splash-retry" style="border-color:var(--gold);color:var(--gold);">Try Again</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <div id="app">
 
   <!-- Header -->
   <header id="header">
     <div class="header-left">
-      <div class="logo-mark">TC</div>
       <span class="app-title">Tarkov Craft</span>
     </div>
     <div class="header-right">
@@ -36,10 +59,24 @@
         <i class="fa-solid fa-right-left"></i>
         <span>Barter</span>
       </button>
+      <button class="sidebar-btn" id="btn-stations" title="Hideout Stations">
+        <i class="fa-solid fa-house"></i>
+        <span>Stations</span>
+      </button>
       <div class="sidebar-sep"></div>
-      <button class="sidebar-btn sidebar-tools" id="btn-id-gen" title="Generate MongoDB ObjectId">
-        <i class="fa-solid fa-gear"></i>
-        <span>Tools</span>
+      <button class="sidebar-btn" id="btn-id-gen" title="Generate MongoDB ObjectId">
+        <i class="fa-solid fa-fingerprint"></i>
+        <span>MongoID</span>
+      </button>
+      <button class="sidebar-btn" id="btn-tips" title="Tips &amp; Tricks">
+        <i class="fa-solid fa-lightbulb"></i>
+        <span>Tips</span>
+      </button>
+      <div class="sidebar-spacer"></div>
+      <div class="sidebar-sep"></div>
+      <button class="sidebar-btn sidebar-about" id="btn-about" title="About TarkovCraft">
+        <i class="fa-solid fa-circle-info"></i>
+        <span>About</span>
       </button>
     </nav>
 
@@ -61,66 +98,91 @@
       <section id="craft-form-section">
 
         <!-- Craft name -->
-        <div class="field-group">
-          <div class="field-label"><span>Craft Name</span></div>
+        <div class="field-group form-group-section">
+          <div class="field-label">
+            <span>Craft Name</span>
+            <span class="field-hint">Defaults to "Craft N" if blank</span>
+          </div>
           <input type="text" id="craft-name" class="tc-input" placeholder="e.g. My Med Kit">
         </div>
 
         <!-- Ingredients -->
-        <div class="field-group">
+        <div class="field-group form-group-section">
           <div class="field-label">
-            <span>Craft Ingredients</span>
-            <button class="field-label-action" id="btn-add-ingredient">+ Add Ingredient</button>
+            <span>Ingredients</span>
+            <button class="field-label-action" id="btn-add-ingredient">+ Add</button>
           </div>
           <div id="ingredient-rows">
             <!-- Ingredient rows injected by script.js -->
           </div>
         </div>
 
-        <div class="form-divider"></div>
-
         <!-- Tools -->
-        <div class="field-group">
+        <div class="field-group form-group-section">
           <div class="field-label">
-            <span>Craft Tools</span>
-            <button class="field-label-action" id="btn-add-tool">+ Add Tool</button>
+            <span>Tools <span class="field-tag">Optional</span></span>
+            <button class="field-label-action" id="btn-add-tool">+ Add</button>
           </div>
           <div id="tool-rows">
             <!-- Tool rows injected by script.js -->
           </div>
         </div>
 
-        <div class="form-divider"></div>
-
-        <!-- Misc -->
-        <div class="field-group">
-          <div class="field-label"><span>Misc</span></div>
-          <div id="end-product-wrap" class="combobox-wrap" style="margin-bottom:6px;">
+        <!-- Output -->
+        <div class="field-group form-group-output">
+          <div class="field-label">
+            <span>Output Item</span>
+          </div>
+          <div id="end-product-wrap" class="combobox-wrap" style="margin-bottom:8px;">
             <!-- End product combobox injected by script.js -->
           </div>
-          <div class="misc-grid-2" style="margin-bottom:6px;">
-            <input type="number" id="craft-time" class="tc-input-number" placeholder="Time (minutes)">
-            <input type="number" id="craft-count" class="tc-input-number" placeholder="Output Count" value="1">
-          </div>
-          <div class="misc-grid-2">
-            <select id="hideout-area" class="tc-select">
-              <option value="">Hideout Area</option>
-              <option value="2">LAVATORY</option>
-              <option value="6">WATER COLLECTOR</option>
-              <option value="7">MEDSTATION</option>
-              <option value="8">NUTRITION UNIT</option>
-              <option value="10">WORKBENCH</option>
-              <option value="11">INTELLIGENCE CENTER</option>
-              <option value="19">BOOZE GENERATOR</option>
-            </select>
-            <input type="number" id="hideout-level" class="tc-input-number" placeholder="Area Level" value="1">
+          <div class="output-count-row">
+            <span class="cell-label">Produces</span>
+            <input type="number" id="craft-count" class="tc-input-number output-count-input" placeholder="1" value="1">
+            <span class="cell-label">units per craft</span>
           </div>
         </div>
 
-        <button class="btn-add-craft" id="btn-add-craft">+ Add Craft</button>
+        <!-- Production settings -->
+        <div class="field-group form-group-section">
+          <div class="field-label"><span>Production</span></div>
+          <div class="production-grid">
+            <div class="production-cell">
+              <div class="cell-label">Station</div>
+              <select id="hideout-area" class="tc-select">
+                <option value="">Select area</option>
+                <option value="2">LAVATORY</option>
+                <option value="6">WATER COLLECTOR</option>
+                <option value="7">MEDSTATION</option>
+                <option value="8">NUTRITION UNIT</option>
+                <option value="10">WORKBENCH</option>
+                <option value="11">INTELLIGENCE CENTER</option>
+                <option value="19">BOOZE GENERATOR</option>
+              </select>
+            </div>
+            <div class="production-cell">
+              <div class="cell-label">Min. Level</div>
+              <input type="number" id="hideout-level" class="tc-input-number" placeholder="1" value="1">
+            </div>
+            <div class="production-cell">
+              <div class="cell-label">
+                Duration (minutes)
+                <span id="time-hint" class="time-hint"></span>
+              </div>
+              <input type="number" id="craft-time" class="tc-input-number" placeholder="e.g. 30">
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-add-craft" id="btn-add-craft">
+          <span class="btn-craft-icon">+</span> Add Craft
+        </button>
 
       </section>
     </main>
+
+    <!-- Resizable divider -->
+    <div id="resizer"></div>
 
     <!-- JSON preview panel -->
     <aside id="json-panel">
@@ -131,12 +193,18 @@
         <pre id="json-pre"></pre>
       </div>
       <div id="json-panel-footer">
-        <button class="btn-json" id="btn-copy-json">
-          <i class="fa-regular fa-copy"></i> Copy All
-        </button>
-        <button class="btn-json" id="btn-download-json">
-          <i class="fa-solid fa-download"></i> Download .json
-        </button>
+        <div class="json-footer-left">
+          <button class="btn-json" id="btn-copy-json">
+            <i class="fa-regular fa-copy"></i> Copy All
+          </button>
+          <button class="btn-json" id="btn-download-json">
+            <i class="fa-solid fa-download"></i> Download .json
+          </button>
+        </div>
+        <a href="#" target="_blank" rel="noopener" class="btn-get-mod">
+          <i class="fa-solid fa-puzzle-piece"></i>
+          <span>Get SPT Mod</span>
+        </a>
       </div>
     </aside>
 
@@ -145,6 +213,103 @@
 
 <!-- Toast container -->
 <div id="toast-container"></div>
+
+<!-- About Modal -->
+<div id="modal-about" class="modal-overlay" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-labelledby="modal-about-title">
+    <button class="modal-close" id="btn-modal-about-close" aria-label="Close">✕</button>
+    <div class="modal-logo-row">
+      <div>
+        <h1 class="modal-app-title" id="modal-about-title">Tarkov Craft</h1>
+        <span class="modal-version">v2.0</span>
+      </div>
+    </div>
+    <p class="modal-desc">
+      A craft recipe generator for SPT modders.
+      Build hideout craft recipes without writing JSON by hand — export a
+      schema-compliant <code>crafts.json</code> ready to drop into your SPT mod.
+    </p>
+    <div class="modal-footer-line">
+      Made for the SPT modding community
+    </div>
+  </div>
+</div>
+
+<!-- Tips Modal -->
+<div id="modal-tips" class="modal-overlay" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-labelledby="modal-tips-title">
+    <button class="modal-close" id="btn-modal-tips-close" aria-label="Close">✕</button>
+    <h2 class="modal-section-title" id="modal-tips-title">Tips &amp; Tricks</h2>
+    <ul class="modal-tips-list">
+      <li><strong>Custom Item</strong> — Check "Custom" on any ingredient, tool, or output to paste a MongoDB ObjectId directly instead of searching the API.</li>
+      <li><strong>MongoID</strong> — Click the MongoID button in the sidebar to generate and copy a fresh ObjectId to your clipboard instantly.</li>
+      <li><strong>Production time</strong> is entered in minutes. A live preview (e.g. "= 1h 30m") appears as you type in the duration field.</li>
+      <li><strong>Export</strong> — Use Copy All or Download .json to get your schema-compliant <code>crafts.json</code> for your SPT mod.</li>
+      <li><strong>Item cache</strong> — Items from the Tarkov API are cached locally in your browser. Use Clear DB in the header to force a fresh fetch.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Confirm Clear DB Modal -->
+<div id="modal-confirm-clear" class="modal-overlay" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-labelledby="modal-confirm-clear-title">
+    <h2 class="modal-section-title" id="modal-confirm-clear-title">Clear DB</h2>
+    <p class="modal-desc">Clear all cached item data and session crafts? <strong>This cannot be undone.</strong></p>
+    <div class="modal-confirm-actions">
+      <button class="btn-confirm-cancel" id="btn-confirm-clear-cancel">Cancel</button>
+      <button class="btn-confirm-danger" id="btn-confirm-clear-ok">Clear DB</button>
+    </div>
+  </div>
+</div>
+
+<!-- Stations Modal -->
+<div id="modal-stations" class="modal-overlay" aria-hidden="true">
+  <div class="modal-card modal-card-wide" role="dialog" aria-labelledby="modal-stations-title">
+    <button class="modal-close" id="btn-modal-stations-close" aria-label="Close">✕</button>
+    <h2 class="modal-section-title" id="modal-stations-title">Hideout Stations</h2>
+    <div class="stations-table-wrap">
+    <table class="stations-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Area ID</th>
+          <th>Max Level</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>VENTS</td><td class="stations-id" title="Click to copy">0</td><td>3</td></tr>
+        <tr><td>SECURITY</td><td class="stations-id" title="Click to copy">1</td><td>3</td></tr>
+        <tr class="station-craftable"><td>LAVATORY <span class="station-craft-badge">craft</span></td><td class="stations-id" title="Click to copy">2</td><td>3</td></tr>
+        <tr><td>STASH</td><td class="stations-id" title="Click to copy">3</td><td>4</td></tr>
+        <tr><td>GENERATOR</td><td class="stations-id" title="Click to copy">4</td><td>3</td></tr>
+        <tr><td>HEATING</td><td class="stations-id" title="Click to copy">5</td><td>3</td></tr>
+        <tr class="station-craftable"><td>WATER COLLECTOR <span class="station-craft-badge">craft</span></td><td class="stations-id" title="Click to copy">6</td><td>3</td></tr>
+        <tr class="station-craftable"><td>MEDSTATION <span class="station-craft-badge">craft</span></td><td class="stations-id" title="Click to copy">7</td><td>3</td></tr>
+        <tr class="station-craftable"><td>NUTRITION UNIT <span class="station-craft-badge">craft</span></td><td class="stations-id" title="Click to copy">8</td><td>3</td></tr>
+        <tr><td>REST SPACE</td><td class="stations-id" title="Click to copy">9</td><td>3</td></tr>
+        <tr class="station-craftable"><td>WORKBENCH <span class="station-craft-badge">craft</span></td><td class="stations-id" title="Click to copy">10</td><td>3</td></tr>
+        <tr class="station-craftable"><td>INTELLIGENCE CENTER <span class="station-craft-badge">craft</span></td><td class="stations-id" title="Click to copy">11</td><td>3</td></tr>
+        <tr><td>SHOOTING RANGE</td><td class="stations-id" title="Click to copy">12</td><td>3</td></tr>
+        <tr><td>LIBRARY</td><td class="stations-id" title="Click to copy">13</td><td>1</td></tr>
+        <tr><td>SCAV CASE</td><td class="stations-id" title="Click to copy">14</td><td>1</td></tr>
+        <tr><td>ILLUMINATION</td><td class="stations-id" title="Click to copy">15</td><td>3</td></tr>
+        <tr><td>PLACE OF FAME</td><td class="stations-id" title="Click to copy">16</td><td>3</td></tr>
+        <tr><td>AIR FILTERING UNIT</td><td class="stations-id" title="Click to copy">17</td><td>1</td></tr>
+        <tr><td>SOLAR POWER</td><td class="stations-id" title="Click to copy">18</td><td>1</td></tr>
+        <tr class="station-craftable"><td>BOOZE GENERATOR <span class="station-craft-badge">craft</span></td><td class="stations-id" title="Click to copy">19</td><td>1</td></tr>
+        <tr><td>BITCOIN FARM</td><td class="stations-id" title="Click to copy">20</td><td>3</td></tr>
+        <tr><td>CHRISTMAS TREE</td><td class="stations-id" title="Click to copy">21</td><td>1</td></tr>
+        <tr><td>BROKEN WALL</td><td class="stations-id" title="Click to copy">22</td><td>6</td></tr>
+        <tr><td>GYM</td><td class="stations-id" title="Click to copy">23</td><td>1</td></tr>
+        <tr><td>WEAPON RACK</td><td class="stations-id" title="Click to copy">24</td><td>3</td></tr>
+        <tr><td>WEAPON RACK SECONDARY</td><td class="stations-id" title="Click to copy">25</td><td>3</td></tr>
+        <tr><td>GEAR RACK</td><td class="stations-id" title="Click to copy">26</td><td>3</td></tr>
+        <tr><td>CULTIST CIRCLE</td><td class="stations-id" title="Click to copy">27</td><td>1</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
 
 <script src="https://kit.fontawesome.com/62c44247f4.js" crossorigin="anonymous"></script>
 <script type="module" src="./assets/js/script.js"></script>

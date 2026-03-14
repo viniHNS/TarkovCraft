@@ -1,6 +1,6 @@
 // assets/js/ui.js
 
-const ROW_H = 36; // px — fixed row height for virtual scroll
+const ROW_H = 36; // px
 const VISIBLE_ROWS = Math.ceil(280 / ROW_H) + 2; // 9
 
 // Registry of all open combobox instances — enforces one-open-at-a-time
@@ -234,8 +234,8 @@ class Combobox {
     this.hidden.value = '';
     this.clearBtn.classList.remove('visible');
     this.filtered = [];
+    this._closeDropdown();
     this._renderInner();
-    this.input.focus();
     this.hidden.dispatchEvent(new Event('change', { bubbles: true }));
   }
 
@@ -302,8 +302,11 @@ function toast(message, type = 'danger') {
   _activeToast = el;
 
   setTimeout(() => {
-    el.remove();
-    if (_activeToast === el) _activeToast = null;
+    el.classList.add('dismissing');
+    el.addEventListener('animationend', () => {
+      el.remove();
+      if (_activeToast === el) _activeToast = null;
+    }, { once: true });
   }, 3000);
 }
 
