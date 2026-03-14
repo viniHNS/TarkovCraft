@@ -21,6 +21,12 @@
   --text-muted: #3a3a3a;
   --danger: #c0392b;
   --success: #2ecc71;
+  --json-str: #e07070;
+  --json-num: #7aacff;
+  --text-on-gold: #0d0d0d;
+  --text-white: #ffffff;
+  --gold-hover-bg-8: rgba(200,170,110,0.08);
+  --gold-hover-bg-10: rgba(200,170,110,0.1);
   --sidebar-w: 52px;
   --header-h: 44px;
 }
@@ -268,20 +274,7 @@ html, body {
 .field-label-action:disabled { opacity: 0.3; cursor: not-allowed; }
 
 /* ── Text inputs ── */
-.tc-input {
-  width: 100%;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  color: var(--text-primary);
-  font-family: Bender, sans-serif;
-  font-size: 13px;
-  padding: 7px 10px;
-  outline: none;
-  transition: border-color 0.15s;
-}
-.tc-input:focus { border-color: var(--gold); }
-.tc-input::placeholder { color: var(--text-muted); }
-
+.tc-input,
 .tc-input-number {
   width: 100%;
   background: var(--surface);
@@ -292,12 +285,17 @@ html, body {
   padding: 7px 10px;
   outline: none;
   transition: border-color 0.15s;
+}
+.tc-input:focus,
+.tc-input-number:focus { border-color: var(--gold); }
+.tc-input::placeholder,
+.tc-input-number::placeholder { color: var(--text-muted); }
+
+.tc-input-number {
   -moz-appearance: textfield;
 }
 .tc-input-number::-webkit-outer-spin-button,
 .tc-input-number::-webkit-inner-spin-button { -webkit-appearance: none; }
-.tc-input-number:focus { border-color: var(--gold); }
-.tc-input-number::placeholder { color: var(--text-muted); }
 
 .tc-select {
   width: 100%;
@@ -317,6 +315,9 @@ html, body {
   transition: border-color 0.15s;
 }
 .tc-select:focus { border-color: var(--gold); }
+.tc-input:disabled,
+.tc-input-number:disabled,
+.tc-select:disabled { opacity: 0.4; cursor: not-allowed; }
 
 /* ── Ingredient / Tool rows ── */
 .ingredient-row, .tool-row {
@@ -351,7 +352,7 @@ html, body {
   width: 100%;
   background: var(--gold);
   border: none;
-  color: #0d0d0d;
+  color: var(--text-on-gold);
   font-family: Bender, sans-serif;
   font-weight: bold;
   font-size: 13px;
@@ -412,8 +413,8 @@ html, body {
 }
 
 .json-key   { color: var(--gold); }
-.json-str   { color: #e07070; }
-.json-num   { color: #7aacff; }
+.json-str   { color: var(--json-str); }
+.json-num   { color: var(--json-num); }
 .json-bool  { color: var(--gold); }
 .json-null  { color: var(--gold); }
 .json-empty { color: var(--text-muted); font-style: italic; }
@@ -439,7 +440,7 @@ html, body {
   cursor: pointer;
   transition: background 0.15s;
 }
-.btn-json:hover { background: rgba(200,170,110,0.1); }
+.btn-json:hover { background: var(--gold-hover-bg-10); }
 
 /* ── Combobox ── */
 .combobox-wrap { position: relative; }
@@ -512,7 +513,7 @@ html, body {
   gap: 8px;
 }
 .combobox-option:hover,
-.combobox-option.active { background: rgba(200,170,110,0.08); }
+.combobox-option.active { background: var(--gold-hover-bg-8); }
 .combobox-option.active { border-left: 2px solid var(--gold); }
 
 .combobox-option-name {
@@ -549,7 +550,7 @@ html, body {
   font-family: Bender, sans-serif;
   font-size: 13px;
   letter-spacing: 0.5px;
-  color: #fff;
+  color: var(--text-white);
   margin-top: 8px;
   animation: toast-in 0.2s ease;
 }
@@ -576,7 +577,7 @@ html, body {
   padding: 3px 8px;
   white-space: nowrap;
   pointer-events: none;
-  z-index: 100;
+  z-index: 1001;
 }
 .sidebar-btn[title]:hover { overflow: visible; }
 
@@ -585,3 +586,7 @@ html, body {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* ── Accessibility ── */
+button:focus-visible { outline: 1px solid var(--gold); outline-offset: 2px; }
+input:focus-visible { outline: none; }
