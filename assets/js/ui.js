@@ -283,4 +283,95 @@ class Combobox {
   }
 }
 
-export { Combobox };
+// ── Toast ────────────────────────────────────────────────────
+let _activeToast = null;
+
+/**
+ * Show a toast notification.
+ * @param {string} message
+ * @param {'success'|'danger'} type
+ */
+function toast(message, type = 'danger') {
+  const container = document.getElementById('toast-container');
+  if (_activeToast) _activeToast.remove();
+
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = message;
+  container.appendChild(el);
+  _activeToast = el;
+
+  setTimeout(() => {
+    el.remove();
+    if (_activeToast === el) _activeToast = null;
+  }, 3000);
+}
+
+// ── Sidebar navigation ────────────────────────────────────────
+/**
+ * Wire sidebar buttons to section visibility.
+ * @param {Array<{btnId: string, sectionId: string}>} routes
+ */
+function initSidebar(routes) {
+  routes.forEach(({ btn, section }) => {
+    btn.addEventListener('click', () => {
+      routes.forEach(r => {
+        r.btn.classList.remove('active');
+        r.section.style.display = 'none';
+      });
+      btn.classList.add('active');
+      section.style.display = '';
+    });
+  });
+}
+
+// ── JSON Preview renderer ─────────────────────────────────────
+/**
+ * Syntax-highlight a JSON string for HTML display.
+ * @param {string} json
+ * @returns {string} HTML string
+ */
+function highlightJson(json) {
+  return json
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(
+      /("(\\u[a-fA-F0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+      (match) => {
+        let cls = 'json-num';
+        if (/^"/.test(match)) {
+          cls = /:$/.test(match) ? 'json-key' : 'json-str';
+        } else if (/true|false/.test(match)) {
+          cls = 'json-bool';
+        } else if (/null/.test(match)) {
+          cls = 'json-null';
+        }
+        return `<span class="${cls}">${match}</span>`;
+      }
+    );
+}
+
+/**
+ * Render crafts array into the JSON preview panel.
+ * @param {Array<Object>} crafts - committed crafts (displayName already stripped)
+ */
+function renderJsonPreview(crafts) {
+  const pre = document.getElementById('json-pre');
+  const label = document.getElementById('json-panel-label');
+  const n = crafts.length;
+
+  label.textContent = `crafts.json — ${n} item${n !== 1 ? 's' : ''}`;
+
+  if (n === 0) {
+    pre.innerHTML = `<span class="json-empty">[]  // No crafts yet</span>`;
+    return;
+  }
+
+  const json = JSON.stringify(crafts, null, 2);
+  pre.innerHTML = highlightJson(json);
+}
+
+// Note: initSidebar is deferred — only Craft section is active; Barter is WIP (pointer-events: none).
+// When Barter is implemented, wire initSidebar to toggle panel visibility.
+export { Combobox, toast, renderJsonPreview };
