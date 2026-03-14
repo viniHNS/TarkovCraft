@@ -775,8 +775,8 @@ html, body {
 }
 
 /* ── Sidebar tooltip ── */
-.sidebar-btn[title]:hover::after {
-  content: attr(title);
+.sidebar-btn[data-tooltip]:hover::after {
+  content: attr(data-tooltip);
   position: absolute;
   left: calc(var(--sidebar-w) + 4px);
   top: 50%;
@@ -791,7 +791,7 @@ html, body {
   pointer-events: none;
   z-index: 1001;
 }
-.sidebar-btn[title]:hover { overflow: visible; }
+.sidebar-btn[data-tooltip]:hover { overflow: visible; }
 
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 4px; }
