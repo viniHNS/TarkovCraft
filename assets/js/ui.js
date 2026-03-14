@@ -92,9 +92,10 @@ class Combobox {
     });
 
     // Close on outside click
-    document.addEventListener('mousedown', (e) => {
+    this._outsideClickHandler = (e) => {
       if (!this.wrap.contains(e.target)) this._closeDropdown();
-    });
+    };
+    document.addEventListener('mousedown', this._outsideClickHandler);
   }
 
   _filter(query) {
@@ -276,7 +277,10 @@ class Combobox {
   getValue() { return this.hidden.value; }
 
   /** Destroy — remove from global registry */
-  destroy() { _allComboboxes.delete(this); }
+  destroy() {
+    _allComboboxes.delete(this);
+    document.removeEventListener('mousedown', this._outsideClickHandler);
+  }
 }
 
 export { Combobox };
